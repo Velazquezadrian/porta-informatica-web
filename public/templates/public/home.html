@@ -1,0 +1,53 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Hero principal -->
+ <section class="hero" data-aos="fade-up">
+    <div class="hero-content">
+        <h1>Soluciones tecnológicas para tu mundo</h1>
+        <p>Equipos, servicios y soporte para empresas y hogares</p>
+        <a href="{% url 'servicios' %}" class="btn-primary">Ver servicios</a>
+    </div>
+ </section>
+
+ <!-- Servicios destacados -->
+  <section class="services" data-aos="fade-up">
+    <h2>Nuestros Servicios</h2>
+    <div class="service-cards">
+        <div class="card" data-aos="zoom-in">
+            <img src="{% static 'img/hosting.png' %}" alt="Hosting">
+            <h3>Hosting</h3>
+            <p>Planes de hosting rápidos y seguros para tu negocio.</p>
+        </div>
+        <div class="card" data-aos="zoom-in" data-aos-delay="100">
+            <img src="{% static 'img/redes.png' %}" alt="Redes">
+            <h3>Redes</h3>
+            <p>Instalación y mantenimiento de redes cableadas e inalámbricas.</p>
+        </div>
+        <div class="card" data-aos="zoom-in" data-aos-delay="200">
+            <img src="static 'img/soporte.png" alt="Soporte Técnico">
+            <h3>Soporte Técnico</h3>
+            <p>Asistencia remota y presencial para resolver cualquier problema.</p>
+        </div>
+    </div>
+  </section>
+  
+  <!-- Carrusel Swiper -->
+   <section class="carousel" data-aos="fade-up">
+    <h2>Productos Destacados</h2>
+        <div class="swiper">
+            <div class="swiper-wrapper"></div>
+                <div class="swiper-slide">Producto 1</div>
+                <div class="swiper-slide">Producto 2</div>
+                <div class="swiper-slide">Producto 3</div>
+            </div>
+            <!-- Controles -->
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-nest"></div>
+        </div>
+   </section>
+   
+{% endblock %}

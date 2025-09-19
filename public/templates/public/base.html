@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Porta Informatica</title>
+    <meta name="viewport" content="witdh=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'ccs/style.css' %}">
+    <!-- AOS Animations -->
+     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}"></a></li>
+                <li><a href="{% url 'servicios' %}"></a></li>
+                <li><a href="{% url 'contacto' %}"></a></li>
+                <li><a href="/panel/lista/">Catálogo</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {%  block content %}
+        <!-- Aquí se inserta el contenido de cada página -->
+        {%  endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Porta Informatica. Todos los derechos reservados.</p>
+    </footer>
+    
+<!-- AOS JS -->
+ <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+ <script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+ </script>
+
+ <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script>
+    const swiper = new swiper('.swiper', {
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickeable: true,
+        },
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: 'swiper-button-prev',
+        },
+        slidesPerView: 1,
+        spaceBetween: 20,
+        breakpoint: {
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 }, 
+        }        
+    });
+  </script>
+</body>
+</html>
