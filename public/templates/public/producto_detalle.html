@@ -1,0 +1,15 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="product-detalle">
+    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="max-width: 300px;">
+    <h1>{{ producto.nombre }}</h1>
+    <p>{{ producto.descripcion }}</p>
+    <p><strong>{{ prodcuto.precio }}</strong></p>
+    <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}">
+    <button onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
+        Agregar al carrito
+    </button>
+</section>
+{% endblock %}

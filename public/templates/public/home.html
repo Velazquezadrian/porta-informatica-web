@@ -3,51 +3,51 @@
 
 {% block content %}
 
-<!-- Hero principal -->
- <section class="hero" data-aos="fade-up">
-    <div class="hero-content">
-        <h1>Soluciones tecnológicas para tu mundo</h1>
-        <p>Equipos, servicios y soporte para empresas y hogares</p>
-        <a href="{% url 'servicios' %}" class="btn-primary">Ver servicios</a>
-    </div>
- </section>
+<!-- Hero institucional -->
+<section class="hero">
+  <h1>Porta Informática</h1>
+  <p>Soluciones tecnológicas para tu mundo</p>
+</section>
 
- <!-- Servicios destacados -->
-  <section class="services" data-aos="fade-up">
-    <h2>Nuestros Servicios</h2>
-    <div class="service-cards">
-        <div class="card" data-aos="zoom-in">
-            <img src="{% static 'img/hosting.png' %}" alt="Hosting">
-            <h3>Hosting</h3>
-            <p>Planes de hosting rápidos y seguros para tu negocio.</p>
-        </div>
-        <div class="card" data-aos="zoom-in" data-aos-delay="100">
-            <img src="{% static 'img/redes.png' %}" alt="Redes">
-            <h3>Redes</h3>
-            <p>Instalación y mantenimiento de redes cableadas e inalámbricas.</p>
-        </div>
-        <div class="card" data-aos="zoom-in" data-aos-delay="200">
-            <img src="static 'img/soporte.png" alt="Soporte Técnico">
-            <h3>Soporte Técnico</h3>
-            <p>Asistencia remota y presencial para resolver cualquier problema.</p>
-        </div>
-    </div>
-  </section>
-  
-  <!-- Carrusel Swiper -->
-   <section class="carousel" data-aos="fade-up">
-    <h2>Productos Destacados</h2>
-        <div class="swiper">
-            <div class="swiper-wrapper"></div>
-                <div class="swiper-slide">Producto 1</div>
-                <div class="swiper-slide">Producto 2</div>
-                <div class="swiper-slide">Producto 3</div>
-            </div>
-            <!-- Controles -->
-            <div class="swiper-pagination"></div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-nest"></div>
-        </div>
-   </section>
-   
+<!-- Barra de búsqueda y filtro -->
+<section class="filtros" data-aos="fade-up">
+  <form method="get" action="{% url 'home' %}">
+    <input type="text" name="q" placeholder="Buscar producto..." value="{{ request.GET.q }}">
+    <select name="categoria">
+      <option value="">Todas las categorías</option>
+      <option value="Notebooks" {% if request.GET.categoria == "Notebooks" %}selected{% endif %}>Notebooks</option>
+      <option value="Periféricos" {% if request.GET.categoria == "Periféricos" %}selected{% endif %}>Periféricos</option>
+      <option value="Componentes" {% if request.GET.categoria == "Componentes" %}selected{% endif %}>Componentes</option>
+    </select>
+    <button type="submit">Filtrar</button>
+  </form>
+</section>
+
+<!-- Catálogo dinámico -->
+<section class="catalogo" data-aos="fade-up">
+  <h2>Catálogo de Productos</h2>
+  <div class="product-list">
+    {% for producto in productos %}
+      <div class="product-card">
+
+        <!-- Mostrar imagen del producto o imagen por defecto -->
+        {% if producto.imagen %}
+          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+        {% else %}
+          <img src="{% static 'img/placeholder.png' %}" alt="Sin imagen">
+        {% endif %}
+
+        <h4>{{ producto.nombre }}</h4>
+        <p>${{ producto.precio }}</p>
+        <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}">
+        <button onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
+            Agregar al pedido
+        </button>
+
+    {% empty %}
+      <p>No se encontraron productos con esos criterios.</p>
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}

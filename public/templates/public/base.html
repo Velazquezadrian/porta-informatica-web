@@ -3,70 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <title>Porta Informatica</title>
-    <meta name="viewport" content="witdh=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% load static %}
-    <link rel="stylesheet" href="{% static 'ccs/style.css' %}">
-    <!-- AOS Animations -->
-     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- Swiper CSS -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+    <!-- AOS Animations -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </head>
+
 <body>
     <header>
         <nav>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            {% endif %}
             <ul>
-                <li><a href="{% url 'home' %}"></a></li>
-                <li><a href="{% url 'servicios' %}"></a></li>
-                <li><a href="{% url 'contacto' %}"></a></li>
-                <li><a href="/panel/lista/">Catálogo</a></li>
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                <li><a href="{% url 'servicios' %}">Servicios</a></li>
+                <li><a href="{% url 'contacto' %}">Contacto</a></li>
+                <li><a href="{% url 'pedido' %}">🛒 Carrito <span id="cart-count">0</span></a></li> <!-- Contador -->
             </ul>
+                {% if user.is_authenticated %}
+                    Hola, {{ user.username }} |
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+                    {% else %}
+                <a href="{% url 'login' %}">Iniciar sesión</a> |
+                <a href="{% url 'registro' %}">Registrarme</a>
+            {% endif %}
         </nav>
     </header>
 
     <main>
-        {%  block content %}
+        {% block content %}
         <!-- Aquí se inserta el contenido de cada página -->
-        {%  endblock %}
+        {% endblock %}
     </main>
 
     <footer>
         <p>&copy; 2025 Porta Informatica. Todos los derechos reservados.</p>
     </footer>
-    
-<!-- AOS JS -->
- <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
- <script>
-    AOS.init({
-        duration: 800,
-        once: true
-    });
- </script>
 
- <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script>
-    const swiper = new swiper('.swiper', {
-        loop: true,
-        autoplay: {
-            delay: 3000,
-            disableOnInteraction: false,
-        },
-        pagination: {
-            el: '.swiper-pagination',
-            clickeable: true,
-        },
-        navigation: {
-            nextEl: '.swiper-button-next',
-            prevEl: 'swiper-button-prev',
-        },
-        slidesPerView: 1,
-        spaceBetween: 20,
-        breakpoint: {
-            768: { slidesPerView: 2 },
-            1024: { slidesPerView: 3 }, 
-        }        
-    });
-  </script>
+    <!-- AOS JS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true });
+    </script>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper('.swiper', {
+            loop: true,
+            autoplay: { delay: 3000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            slidesPerView: 1,
+            spaceBetween: 20,
+            breakpoints: {
+                768: { slidesPerView: 2 },
+                1024: { slidesPerView: 3 }
+            }
+        });
+    </script>
+
+    <!-- Carrito -->
+    <script>
+        // Actualiza el contador del carrito
+        function actualizarContadorCarrito() {
+            const pedido = JSON.parse(localStorage.getItem('pedido')) || [];
+            const totalItems = pedido.reduce((acc, p) => acc + p.cantidad, 0);
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+
+        document.addEventListener('DOMContentLoaded', actualizarContadorCarrito);
+
+        // Agrega producto al carrito y actualiza contador
+        function agregarAlPedido(nombre, precio, id) {
+            const cantidad = parseInt(document.getElementById(`cantidad_${id}`).value);
+            let pedido = JSON.parse(localStorage.getItem('pedido')) || [];
+
+            const existente = pedido.find(p => p.nombre === nombre);
+            if (existente) {
+                existente.cantidad += cantidad;
+            } else {
+                pedido.push({ nombre, precio, cantidad });
+            }
+
+            localStorage.setItem('pedido', JSON.stringify(pedido));
+            actualizarContadorCarrito(); // Refresca contador
+            alert(`${nombre} x ${cantidad} agregado(s) al pedido.`);
+        }
+    </script>
 </body>
 </html>
