@@ -1,0 +1,92 @@
+{% extends 'public/base.html' %}
+
+{% block content %}
+<section class="pedido">
+    <h2>Resumen del pedido</h2>
+    <ul id="lista-pedido"></ul>
+
+    {% if user.is_authenticated %}
+        <h3>Datos del cliente</h3>
+        <input type="text" id="nombre" placeholder="Nombre completo" value="{{ user.get_full_name }}">
+        <input type="text" id="telefono" placeholder="Número de WhatsApp (solo código de área y número)" value="{{ telefono }}">
+        <input type="text" id="direccion" placeholder="Dirección de entrega" value="{{ direccion }}">
+
+        <label for="metodo-pago">Forma de pago:</label>
+        <select id="metodo-pago">
+            <option value="">Seleccionar...</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Transferencia bancaria">Transferencia bancaria</option>
+            <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+            <option value="Tarjeta de débito">Tarjeta de débito</option>
+        </select>
+
+        <div class="pedido-buttons">
+            <button type="button" onclick="enviarPedidoAlCliente()">Enviar resumen al cliente por WhatsApp</button>
+            <button type="button" onclick="vaciarPedido()">Vaciar pedido</button>
+        </div>
+    {% else %}
+        <p>Debes <a href="{% url 'login' %}">iniciar sesión</a> para hacer un pedido.</p>
+    {% endif %}
+</section>
+
+<script>
+function mostrarPedido() {
+    const listaPedido = document.getElementById('lista-pedido');
+    const productos = JSON.parse(localStorage.getItem('pedido')) || [];
+    let total = 0;
+
+    if (productos.length === 0) {
+        listaPedido.innerHTML = "<li>No hay productos en el pedido.</li>";
+        return;
+    }
+
+    listaPedido.innerHTML = productos.map(p => {
+        let subtotal = p.precio * p.cantidad;
+        total += subtotal;
+        return `<li>${p.nombre} x${p.cantidad} - $${subtotal.toFixed(2)}</li>`;
+    }).join('');
+
+    listaPedido.innerHTML += `<li><strong>Total: $${total.toFixed(2)}</strong></li>`;
+}
+
+function enviarPedidoAlCliente() {
+    const productos = JSON.parse(localStorage.getItem('pedido')) || [];
+    const nombreCliente = document.getElementById('nombre').value.trim();
+    const telefonoCliente = document.getElementById('telefono').value.trim();
+    const direccionCliente = document.getElementById('direccion').value.trim();
+    const metodoPago = document.getElementById('metodo-pago').value.trim();
+
+    if (!nombreCliente || !telefonoCliente || !direccionCliente || !metodoPago || productos.length === 0) {
+        alert("Completá todos los campos y agregá al menos un producto.");
+        return;
+    }
+
+    let total = productos.reduce((acc, p) => acc + (p.precio * p.cantidad), 0);
+    let mensaje = `Hola ${nombreCliente} 👋\nEste es el resumen de tu compra:\n`;
+    productos.forEach(p => mensaje += `- ${p.nombre} x${p.cantidad} ($${p.precio})\n`);
+    mensaje += `\nTotal: $${total.toFixed(2)}\n`;
+    mensaje += `\nForma de pago: ${metodoPago}\n`;
+    mensaje += `Dirección de entrega: ${direccionCliente}\n`;
+    mensaje += `\nGracias por tu compra 🙌`;
+
+    const mensajeCodificado = encodeURIComponent(mensaje);
+
+    // Agregar automáticamente el código de país de Argentina
+    const numeroInternacional = "54" + telefonoCliente.replace(/\D/g, "");
+
+    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const url = esMovil
+        ? `https://api.whatsapp.com/send?phone=${numeroInternacional}&text=${mensajeCodificado}`
+        : `https://web.whatsapp.com/send?phone=${numeroInternacional}&text=${mensajeCodificado}`;
+
+    window.open(url, '_blank');
+}
+
+function vaciarPedido() {
+    localStorage.removeItem('pedido');
+    mostrarPedido();
+}
+
+document.addEventListener('DOMContentLoaded', mostrarPedido);
+</script>
+{% endblock %}
