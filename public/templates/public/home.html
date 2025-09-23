@@ -3,50 +3,70 @@
 
 {% block content %}
 
-<!-- Hero institucional -->
-<section class="hero">
-  <h1>Porta Informática</h1>
-  <p>Soluciones tecnológicas para tu mundo</p>
-</section>
+<!-- Carrusel -->
+{% load static %}
 
-<!-- Barra de búsqueda y filtro -->
-<section class="filtros" data-aos="fade-up">
-  <form method="get" action="{% url 'home' %}">
-    <input type="text" name="q" placeholder="Buscar producto..." value="{{ request.GET.q }}">
-    <select name="categoria">
-      <option value="">Todas las categorías</option>
-      <option value="Notebooks" {% if request.GET.categoria == "Notebooks" %}selected{% endif %}>Notebooks</option>
-      <option value="Periféricos" {% if request.GET.categoria == "Periféricos" %}selected{% endif %}>Periféricos</option>
-      <option value="Componentes" {% if request.GET.categoria == "Componentes" %}selected{% endif %}>Componentes</option>
-    </select>
-    <button type="submit">Filtrar</button>
-  </form>
-</section>
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
 
-<!-- Catálogo dinámico -->
-<section class="catalogo" data-aos="fade-up">
-  <h2>Catálogo de Productos</h2>
-  <div class="product-list">
-    {% for producto in productos %}
-      <div class="product-card">
+    <!-- Slide 1 -->
+    <div class="carousel-item active">
+      <img src="{% static 'img/carrusel/slide01.jpg' %}" class="d-block w-100" alt="Slide 01">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="fw-bold">Tenemos <b>una solución</b> para cada <b>oportunidad</b></h1>
+      </div>
+    </div>
 
-        <!-- Mostrar imagen del producto o imagen por defecto -->
-        {% if producto.imagen %}
-          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
-        {% else %}
-          <img src="{% static 'img/placeholder.png' %}" alt="Sin imagen">
-        {% endif %}
+    <!-- Slide 2 -->
+    <div class="carousel-item">
+      <img src="{% static 'img/carrusel/slide02.jpg' %}" class="d-block w-100" alt="Slide 02">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="fw-bold">Nos <b>focalizamos</b> en brindar <b>un mejor servicio</b> cada día</h1>
+      </div>
+    </div>
 
-        <h4>{{ producto.nombre }}</h4>
-        <p>${{ producto.precio }}</p>
-        <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}">
-        <button onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
-            Agregar al pedido
-        </button>
+    <!-- Slide 3 -->
+    <div class="carousel-item">
+      <img src="{% static 'img/carrusel/slide03.jpg' %}" class="d-block w-100" alt="Slide 03">
+      <div class="carousel-caption d-none d-md-block">
+        <h1 class="fw-bold">Asesoramiento y atención <b>personalizada</b></h1>
+      </div>
+    </div>
 
-    {% empty %}
-      <p>No se encontraron productos con esos criterios.</p>
-    {% endfor %}
+  </div>
+
+  <!-- Controles -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
+</div>
+
+<!-- Catálogo -->
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-4 text-warning">Catálogo de Productos</h2>
+    <div class="row g-4">
+      {% for producto in productos %}
+        <div class="col-md-3 col-sm-6">
+          <div class="card h-100 text-center">
+            <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain;" alt="{{ producto.nombre }}">
+            <div class="card-body">
+              <h5 class="card-title">{{ producto.nombre }}</h5>
+              <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
+              <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control mb-2">
+              <button class="btn btn-warning w-100" onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
+                Agregar al pedido
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
   </div>
 </section>
 

@@ -1,100 +1,66 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Porta Informatica</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-    <!-- AOS Animations -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Porta Informática</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <script src="{% static 'js/carrito.js' %}"></script>
 </head>
-
 <body>
-    <header>
-        <nav>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
-            {% endif %}
-            <ul>
-                <li><a href="{% url 'home' %}">Inicio</a></li>
-                <li><a href="{% url 'servicios' %}">Servicios</a></li>
-                <li><a href="{% url 'contacto' %}">Contacto</a></li>
-                <li><a href="{% url 'pedido' %}">🛒 Carrito <span id="cart-count">0</span></a></li> <!-- Contador -->
-            </ul>
-                {% if user.is_authenticated %}
-                    Hola, {{ user.username }} |
-                <a href="{% url 'logout' %}">Cerrar sesión</a>
-                    {% else %}
-                <a href="{% url 'login' %}">Iniciar sesión</a> |
-                <a href="{% url 'registro' %}">Registrarme</a>
-            {% endif %}
-        </nav>
-    </header>
 
-    <main>
-        {% block content %}
-        <!-- Aquí se inserta el contenido de cada página -->
-        {% endblock %}
-    </main>
+<header>
+  <!-- Línea naranja superior -->
+  <div style="background-color: #f57c00; height: 5px;"></div>
 
-    <footer>
-        <p>&copy; 2025 Porta Informatica. Todos los derechos reservados.</p>
-    </footer>
+  <!-- Bloque logo + contacto -->
+  <div class="bg-dark text-white py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+      <!-- Logo -->
+      <div>
+        <img src="{% static 'img/logo/logo.png' %}" alt="Porta Informática" style="height:50px;">
+      </div>
+      <!-- Contacto -->
+      <div class="text-end small">
+        San Martín 1688 - Rosario | +54 (0341) 153682342 | (0341) 647-9382
+      </div>
+    </div>
+  </div>
 
-    <!-- AOS JS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true });
-    </script>
+  <!-- Menú -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-top border-warning">
+    <div class="container">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link {% if request.resolver_match.url_name == 'home' %}text-warning fw-bold{% endif %}" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'servicios' %}">Servicios</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'contacto' %}">Contacto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'pedido' %}">🛒 Carrito</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
 
-    <!-- Swiper JS -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
-        const swiper = new Swiper('.swiper', {
-            loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false },
-            pagination: { el: '.swiper-pagination', clickable: true },
-            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            slidesPerView: 1,
-            spaceBetween: 20,
-            breakpoints: {
-                768: { slidesPerView: 2 },
-                1024: { slidesPerView: 3 }
-            }
-        });
-    </script>
+{% block content %}{% endblock %}
 
-    <!-- Carrito -->
-    <script>
-        // Actualiza el contador del carrito
-        function actualizarContadorCarrito() {
-            const pedido = JSON.parse(localStorage.getItem('pedido')) || [];
-            const totalItems = pedido.reduce((acc, p) => acc + p.cantidad, 0);
-            document.getElementById('cart-count').textContent = totalItems;
-        }
+<footer class="bg-dark text-white text-center py-3 mt-5">
+  <small>© {{ year }} Porta Informática. Todos los derechos reservados.</small>
+</footer>
 
-        document.addEventListener('DOMContentLoaded', actualizarContadorCarrito);
-
-        // Agrega producto al carrito y actualiza contador
-        function agregarAlPedido(nombre, precio, id) {
-            const cantidad = parseInt(document.getElementById(`cantidad_${id}`).value);
-            let pedido = JSON.parse(localStorage.getItem('pedido')) || [];
-
-            const existente = pedido.find(p => p.nombre === nombre);
-            if (existente) {
-                existente.cantidad += cantidad;
-            } else {
-                pedido.push({ nombre, precio, cantidad });
-            }
-
-            localStorage.setItem('pedido', JSON.stringify(pedido));
-            actualizarContadorCarrito(); // Refresca contador
-            alert(`${nombre} x ${cantidad} agregado(s) al pedido.`);
-        }
-    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
