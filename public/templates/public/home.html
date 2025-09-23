@@ -6,30 +6,47 @@
 <!-- Carrusel -->
 {% load static %}
 
-<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+  
+  <!-- Indicadores -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+
   <div class="carousel-inner">
 
     <!-- Slide 1 -->
-    <div class="carousel-item active">
+    <div class="carousel-item active position-relative">
       <img src="{% static 'img/carrusel/slide01.jpg' %}" class="d-block w-100" alt="Slide 01">
-      <div class="carousel-caption d-none d-md-block">
-        <h1 class="fw-bold">Tenemos <b>una solución</b> para cada <b>oportunidad</b></h1>
+      <div class="overlay"></div>
+      <div class="carousel-caption caption-right">
+        <h1 class="fw-bold text-white display-3">
+          Tenemos <b>una solución</b> <br>para cada <b>oportunidad</b>
+        </h1>
       </div>
     </div>
 
     <!-- Slide 2 -->
-    <div class="carousel-item">
+    <div class="carousel-item position-relative">
       <img src="{% static 'img/carrusel/slide02.jpg' %}" class="d-block w-100" alt="Slide 02">
-      <div class="carousel-caption d-none d-md-block">
-        <h1 class="fw-bold">Nos <b>focalizamos</b> en brindar <b>un mejor servicio</b> cada día</h1>
+      <div class="overlay"></div>
+      <div class="carousel-caption caption-right">
+        <h1 class="fw-bold text-white display-3">
+          Nos <b>focalizamos</b> en <br> brindar <b>un mejor <br> servicio</b> cada día
+        </h1>
       </div>
     </div>
 
     <!-- Slide 3 -->
-    <div class="carousel-item">
+    <div class="carousel-item position-relative">
       <img src="{% static 'img/carrusel/slide03.jpg' %}" class="d-block w-100" alt="Slide 03">
-      <div class="carousel-caption d-none d-md-block">
-        <h1 class="fw-bold">Asesoramiento y atención <b>personalizada</b></h1>
+      <div class="overlay"></div>
+      <div class="carousel-caption caption-right">
+        <h1 class="fw-bold text-white display-3">
+          Asesoramiento y atención <br> <b>personalizada</b>
+        </h1>
       </div>
     </div>
 
@@ -46,6 +63,7 @@
   </button>
 </div>
 
+
 <!-- Catálogo -->
 <section class="py-5">
   <div class="container">
@@ -59,9 +77,13 @@
               <h5 class="card-title">{{ producto.nombre }}</h5>
               <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
               <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control mb-2">
-              <button class="btn btn-warning w-100" onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
+              <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control mb-2">
+
+              <button class="btn btn-warning w-100"
+                      onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
                 Agregar al pedido
               </button>
+
             </div>
           </div>
         </div>

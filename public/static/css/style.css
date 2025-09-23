@@ -1,39 +1,93 @@
-.navbar .nav-link.fw-bold {
-  background-color: rgba(255,255,255,0.2);
-  border-radius: 4px;
-}
-
-.carousel-caption {
+/* Overlay gris */
+.overlay {
+  position: absolute;
+  inset: 0;
   background: rgba(0,0,0,0.4);
-  padding: 20px;
-  border-radius: 8px;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.text-warning {
-  color: #f57c00 !important;
+/* Texto alineado a la derecha y centrado verticalmente */
+.carousel-caption.caption-right {
+  position: absolute;
+  top: 50%;
+  right: 5%;
+  transform: translateY(-50%);
+  text-align: right;
+  z-index: 2;
 }
 
-.btn-warning {
+.carousel-caption.caption-right h1 {
+  font-size: 4.5rem;
+  line-height: 1.2;
+}
+
+/* Flechas grandes, blancas y separadas del texto */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 15%;
+  height: 100%;
+  z-index: 3;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  width: 4rem;
+  height: 4rem;
+  background-size: 100% 100%;
+  filter: invert(1);
+}
+
+.carousel-control-prev {
+  left: 1rem;
+}
+
+.carousel-control-next {
+  right: 1rem;
+}
+
+/* Indicadores (puntos) */
+.carousel-indicators {
+  z-index: 4;
+}
+
+.carousel-indicators [data-bs-target] {
+  background-color: grey;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.carousel-indicators .active {
   background-color: #f57c00;
-  border-color: #f57c00;
 }
 
-.btn-warning:hover {
-  background-color: #e65100;
-  border-color: #e65100;
-}
-.navbar-dark .nav-link {
-  color: #fff;
-}
-
-.navbar-dark .nav-link.text-warning {
-  color: #f57c00 !important;
-}
-
-.navbar-dark .nav-link:hover {
-  color: #f57c00;
-}
-
-header .small {
-  font-size: 0.9rem;
+/* ===== Mobile adjustments ===== */
+@media (max-width: 768px) {
+  .carousel-caption.caption-right h1 {
+    font-size: 2rem; /* más pequeño para mobile */
+    line-height: 1.3;
+  }
+  .carousel-caption.caption-right {
+    right: 2%;
+    text-align: right;
+  }
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  .carousel-control-prev {
+    left: 0.5rem;
+  }
+  .carousel-control-next {
+    right: 0.5rem;
+  }
+  .carousel-indicators [data-bs-target] {
+    width: 14px;
+    height: 14px;
+  }
+  .overlay {
+    background: rgba(0,0,0,0.5); /* más oscuro en mobile */
+  }
 }
