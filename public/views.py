@@ -3,11 +3,13 @@ from core.models import Producto  # Importamos el modelo desde core
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.db import transaction
 from django.core.paginator import Paginator  # Paginación del catálogo
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt  # Si se quisiera permitir sin token (no recomendado)
-from core.models import Producto, Pedido, PedidoItem
+from core.models import Producto, Pedido, PedidoItem, Perfil
+from core.forms import *  # Asumiendo que PerfilForm está definido allí (ajustar si nombre distinto)
 
 
 # Vista principal: muestra el catálogo en el home
@@ -23,8 +25,8 @@ def home(request):
     precio_max = request.GET.get('precio_max')
     page_number = request.GET.get('page', 1)
 
-    # Base queryset (en el futuro se puede agregar .filter(activo=True))
-    productos_qs = Producto.objects.all()
+    # Base queryset: sólo productos activos (visibilidad controlada desde admin mediante campo booleano 'activo').
+    productos_qs = Producto.objects.filter(activo=True)
 
     # Aplicar filtros de forma incremental (orden estable para extensión futura)
     if categoria:
@@ -121,13 +123,17 @@ def contacto(request):
 @login_required(login_url='/login/')
 def confirmar_pedido(request):
     """Persistir un pedido proveniente del carrito en localStorage.
-    Espera JSON con estructura:
-    {
-      "items": [{"id": <producto_id>, "cantidad": n, "precio": 123.45, "nombre": "Mouse"}, ...],
-      "cliente": {"nombre": "", "telefono": "", "direccion": "", "metodo_pago": ""},
-      "mensaje": "(opcional) copia del mensaje whatsapp"
-    }
-    Devuelve JSON con id de pedido y total.
+    Validaciones nuevas:
+        - Verifica stock disponible antes de confirmar.
+        - Si cualquier producto no tiene stock suficiente -> aborta (HTTP 409) y no crea pedido.
+        - Descuenta stock de cada producto confirmado.
+    Espera JSON:
+        {
+            "items": [{"id": <producto_id>, "cantidad": n, "precio": 123.45, "nombre": "Mouse"}, ...],
+            "cliente": {"nombre": "", "telefono": "", "direccion": "", "metodo_pago": ""},
+            "mensaje": "(opcional) copia del mensaje whatsapp"
+        }
+    Devuelve JSON {pedido_id, total} o {error}.
     """
     import json
     try:
@@ -142,41 +148,90 @@ def confirmar_pedido(request):
     if not items:
         return JsonResponse({"error": "Sin items"}, status=400)
 
-    pedido = Pedido.objects.create(
-        user=request.user if request.user.is_authenticated else None,
-        nombre_cliente=cliente.get('nombre', ''),
-        telefono=cliente.get('telefono', ''),
-        direccion=cliente.get('direccion', ''),
-        metodo_pago=cliente.get('metodo_pago', ''),
-        mensaje_whatsapp=mensaje[:5000],  # límite defensivo
-    )
-
-    total = 0
+    # Paso 1: Normalizar items y recolectar IDs
+    normalizados = []
+    producto_ids = []
     for it in items:
-        prod = None
-        producto_id = it.get('id')
-        cantidad = int(it.get('cantidad', 1))
-        precio = it.get('precio')
-        nombre = it.get('nombre', '')
-        if producto_id:
-            prod = Producto.objects.filter(id=producto_id).first()
-            if prod:  # si existe, tomar precio real para integridad (opcional mantener el enviado)
-                precio = float(prod.precio)
-                nombre = prod.nombre
+        try:
+            producto_id = int(it.get('id')) if it.get('id') is not None else None
+        except (TypeError, ValueError):
+            producto_id = None
+        try:
+            cantidad = int(it.get('cantidad', 1))
+        except (TypeError, ValueError):
+            cantidad = 1
         if cantidad < 1:
             cantidad = 1
-        subtotal = cantidad * float(precio)
-        total += subtotal
-        PedidoItem.objects.create(
-            pedido=pedido,
-            producto=prod,
-            nombre=nombre,
-            cantidad=cantidad,
-            precio_unitario=precio,
-            subtotal=subtotal
-        )
+        normalizados.append({
+            'id': producto_id,
+            'cantidad': cantidad,
+            'precio': it.get('precio'),  # será reemplazado si existe producto
+            'nombre': it.get('nombre', '')
+        })
+        if producto_id:
+            producto_ids.append(producto_id)
 
-    pedido.total = total
-    pedido.save(update_fields=['total'])
+    # Paso 2: Traer productos existentes en un dict
+    productos_map = {p.id: p for p in Producto.objects.filter(id__in=producto_ids)}
+
+    # Paso 3: Validar stock disponible antes de crear el Pedido.
+    # Si cualquier línea excede el stock actual o el producto está inactivo/inexistente se aborta la operación.
+    faltantes = []
+    for it in normalizados:
+        pid = it['id']
+        if not pid:
+            continue  # items sin id (teórico) se aceptan como líneas libres
+        prod = productos_map.get(pid)
+        if not prod or not prod.activo:
+            faltantes.append({'id': pid, 'error': 'inexistente o inactivo'})
+            continue
+        if it['cantidad'] > prod.stock:
+            faltantes.append({'id': pid, 'error': f"stock insuficiente (disp: {prod.stock})"})
+
+    if faltantes:
+        return JsonResponse({
+            'error': 'Stock insuficiente en uno o más productos',
+            'detalles': faltantes
+        }, status=409)
+
+    # Paso 4: Crear pedido e items de forma atómica y descontar stock
+    with transaction.atomic():
+        pedido = Pedido.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            nombre_cliente=cliente.get('nombre', ''),
+            telefono=cliente.get('telefono', ''),
+            direccion=cliente.get('direccion', ''),
+            metodo_pago=cliente.get('metodo_pago', ''),
+            mensaje_whatsapp=mensaje[:5000],  # límite defensivo
+        )
+        total = 0
+        for it in normalizados:
+            pid = it['id']
+            prod = productos_map.get(pid) if pid else None
+            if prod:
+                # Reemplazar precio y nombre por los actuales del producto (evita manipulación cliente)
+                precio_unit = float(prod.precio)
+                nombre_real = prod.nombre
+            else:
+                # Línea libre (teórico)
+                precio_unit = float(it['precio']) if it['precio'] else 0.0
+                nombre_real = it['nombre'] or 'Item'
+            cantidad = it['cantidad']
+            subtotal = cantidad * precio_unit
+            total += subtotal
+            PedidoItem.objects.create(
+                pedido=pedido,
+                producto=prod,
+                nombre=nombre_real,
+                cantidad=cantidad,
+                precio_unitario=precio_unit,
+                subtotal=subtotal
+            )
+            if prod:
+                # Descontar stock y guardar
+                prod.stock -= cantidad
+                prod.save(update_fields=['stock'])
+        pedido.total = total
+        pedido.save(update_fields=['total'])
 
     return JsonResponse({"pedido_id": pedido.id, "total": float(total)})
