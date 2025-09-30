@@ -210,3 +210,12 @@ form input[type="number"] {
 .pagination .page-link { color: var(--color-primario); border-radius: var(--radius-sm); }
 .pagination .page-item.active .page-link { background: var(--color-primario); border-color: var(--color-primario); color:#fff; }
 .pagination .page-link:hover { color: var(--color-primario-hover); }
+
+/* ================= Navbar dinámico ================= */
+.navbar-main { background:#FFA500; }
+.navbar-main .navbar-brand, .navbar-main .nav-link { color:#fff; }
+.navbar-main .nav-link:hover, .navbar-main .nav-link:focus { color:#222; background:rgba(255,255,255,0.25); border-radius:4px; }
+.navbar-main .dropdown-menu { border-radius:6px; border:1px solid #ffc266; box-shadow:0 4px 14px -4px rgba(0,0,0,.25); }
+.navbar-main .dropdown-item:hover, .navbar-main .dropdown-item:focus { background:#ffe2b3; color:#222; }
+.navbar-main .nav-item.dropdown:focus-within > .nav-link { outline:2px solid #222; outline-offset:2px; }
+@media (hover:none){ .navbar-main .dropdown:hover > .dropdown-menu { display:none; } }
