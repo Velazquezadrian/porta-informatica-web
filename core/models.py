@@ -21,3 +21,36 @@ class Perfil(models.Model):
 
     def __str__(self):
         return f"Perfil de {self.user.username}"  # Muestra el nombre de usuario
+
+
+class Pedido(models.Model):
+    """Pedido persistido (fase inicial – shadow write desde localStorage).
+    Campos mínimos para reconstruir el pedido enviado por WhatsApp.
+    """
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    creado = models.DateTimeField(auto_now_add=True)
+    nombre_cliente = models.CharField(max_length=150, blank=True)
+    telefono = models.CharField(max_length=30, blank=True)
+    direccion = models.CharField(max_length=255, blank=True)
+    metodo_pago = models.CharField(max_length=50, blank=True)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    mensaje_whatsapp = models.TextField(blank=True)  # Copia del mensaje generado (trazabilidad)
+
+    def __str__(self):
+        return f"Pedido #{self.id} - {self.creado:%Y-%m-%d %H:%M}"
+
+
+class PedidoItem(models.Model):
+    pedido = models.ForeignKey(Pedido, related_name='items', on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.SET_NULL, null=True, blank=True)
+    nombre = models.CharField(max_length=150)  # Nombre congelado (por si cambia luego el producto)
+    cantidad = models.PositiveIntegerField(default=1)
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.nombre} x{self.cantidad}"
+
+    class Meta:
+        verbose_name = 'Ítem de pedido'
+        verbose_name_plural = 'Ítems de pedido'

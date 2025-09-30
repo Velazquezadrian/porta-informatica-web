@@ -1,92 +1,125 @@
 {% extends 'public/base.html' %}
 
 {% block content %}
-<section class="pedido">
-    <h2>Resumen del pedido</h2>
-    <ul id="lista-pedido"></ul>
+<section class="container py-4">
+    <h2 class="mb-4 text-warning">Resumen del pedido</h2>
+
+    <!-- Lista dinámica del pedido -->
+    <ul id="lista-pedido" class="list-group mb-4"></ul>
 
     {% if user.is_authenticated %}
-        <h3>Datos del cliente</h3>
-        <input type="text" id="nombre" placeholder="Nombre completo" value="{{ user.get_full_name }}">
-        <input type="text" id="telefono" placeholder="Número de WhatsApp (solo código de área y número)" value="{{ telefono }}">
-        <input type="text" id="direccion" placeholder="Dirección de entrega" value="{{ direccion }}">
-
-        <label for="metodo-pago">Forma de pago:</label>
-        <select id="metodo-pago">
-            <option value="">Seleccionar...</option>
-            <option value="Efectivo">Efectivo</option>
-            <option value="Transferencia bancaria">Transferencia bancaria</option>
-            <option value="Tarjeta de crédito">Tarjeta de crédito</option>
-            <option value="Tarjeta de débito">Tarjeta de débito</option>
-        </select>
-
-        <div class="pedido-buttons">
-            <button type="button" onclick="enviarPedidoAlCliente()">Enviar resumen al cliente por WhatsApp</button>
-            <button type="button" onclick="vaciarPedido()">Vaciar pedido</button>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Datos del cliente</h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="nombre" class="form-label">Nombre completo</label>
+                    <input type="text" id="nombre" class="form-control" value="{{ user.get_full_name }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="telefono" class="form-label">Teléfono (WhatsApp)</label>
+                        <div class="input-group">
+                            <span class="input-group-text">+54</span>
+                            <input type="text" id="telefono" class="form-control" value="{{ telefono }}" placeholder="Ej: 1122334455">
+                        </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="direccion" class="form-label">Dirección de entrega</label>
+                    <input type="text" id="direccion" class="form-control" value="{{ direccion }}">
+                </div>
+                <div class="col-md-4">
+                    <label for="metodo-pago" class="form-label">Forma de pago</label>
+                    <select id="metodo-pago" class="form-select">
+                        <option value="">Seleccionar...</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Transferencia bancaria">Transferencia bancaria</option>
+                        <option value="Tarjeta de crédito">Tarjeta de crédito</option>
+                        <option value="Tarjeta de débito">Tarjeta de débito</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="numero-destino" class="form-label">Enviar a (número empresa)</label>
+                    <input type="text" id="numero-destino" class="form-control" placeholder="Ej: 5491122334455">
+                </div>
+            </div>
+                    <div class="mt-4 d-flex gap-2 flex-wrap">
+                        <button type="button" class="btn btn-outline-primary" onclick="uiGuardarServidor()" id="btn-guardar-servidor">Guardar en servidor</button>
+                        <button type="button" class="btn btn-porta" onclick="uiEnviarWhatsApp()">Enviar pedido por WhatsApp</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="vaciarPedido(); renderPedido();">Vaciar pedido</button>
+                    </div>
         </div>
+    </div>
     {% else %}
         <p>Debes <a href="{% url 'login' %}">iniciar sesión</a> para hacer un pedido.</p>
     {% endif %}
 </section>
 
 <script>
-function mostrarPedido() {
-    const listaPedido = document.getElementById('lista-pedido');
-    const productos = JSON.parse(localStorage.getItem('pedido')) || [];
+// ===================== Lógica de pedido (vista) =====================
+// Esta vista ahora puede: (1) mostrar pedido localStorage, (2) guardarlo en servidor (shadow write), (3) enviar a WhatsApp.
+// Cuando se implemente un flujo 100% server-side se podrá reemplazar la lectura localStorage por una API.
+// Renderiza la lista del pedido en el UL
+function renderPedido() {
+    const lista = document.getElementById('lista-pedido');
+    const items = JSON.parse(localStorage.getItem('pedido') || '[]');
+    if (!items.length) {
+        lista.innerHTML = '<li class="list-group-item text-muted">No hay productos en el pedido.</li>';
+        return;
+    }
     let total = 0;
-
-    if (productos.length === 0) {
-        listaPedido.innerHTML = "<li>No hay productos en el pedido.</li>";
-        return;
-    }
-
-    listaPedido.innerHTML = productos.map(p => {
-        let subtotal = p.precio * p.cantidad;
+    lista.innerHTML = items.map(p => {
+        const subtotal = p.precio * p.cantidad;
         total += subtotal;
-        return `<li>${p.nombre} x${p.cantidad} - $${subtotal.toFixed(2)}</li>`;
+        return `<li class='list-group-item d-flex justify-content-between align-items-center'>
+                            <span>${p.nombre} x${p.cantidad}</span>
+                            <span class='fw-bold'>$${subtotal.toFixed(2)}</span>
+                        </li>`;
     }).join('');
-
-    listaPedido.innerHTML += `<li><strong>Total: $${total.toFixed(2)}</strong></li>`;
+    lista.innerHTML += `<li class='list-group-item d-flex justify-content-between'><strong>Total</strong><strong>$${total.toFixed(2)}</strong></li>`;
 }
 
-function enviarPedidoAlCliente() {
-    const productos = JSON.parse(localStorage.getItem('pedido')) || [];
-    const nombreCliente = document.getElementById('nombre').value.trim();
-    const telefonoCliente = document.getElementById('telefono').value.trim();
-    const direccionCliente = document.getElementById('direccion').value.trim();
-    const metodoPago = document.getElementById('metodo-pago').value.trim();
+// Toma datos del formulario y usa helpers definidos en carrito.js
+function uiEnviarWhatsApp() {
+    const datosCliente = {
+        nombre: document.getElementById('nombre').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        direccion: document.getElementById('direccion').value.trim(),
+        metodoPago: document.getElementById('metodo-pago').value.trim()
+    };
+    const numeroDestino = document.getElementById('numero-destino').value.trim();
 
-    if (!nombreCliente || !telefonoCliente || !direccionCliente || !metodoPago || productos.length === 0) {
-        alert("Completá todos los campos y agregá al menos un producto.");
+    // Validación mínima
+    if (!datosCliente.nombre || !datosCliente.telefono || !datosCliente.direccion || !datosCliente.metodoPago) {
+        alert('Completá todos los campos del cliente.');
+        return;
+    }
+    if (!numeroDestino) {
+        alert('Ingresá el número destino (empresa).');
         return;
     }
 
-    let total = productos.reduce((acc, p) => acc + (p.precio * p.cantidad), 0);
-    let mensaje = `Hola ${nombreCliente} 👋\nEste es el resumen de tu compra:\n`;
-    productos.forEach(p => mensaje += `- ${p.nombre} x${p.cantidad} ($${p.precio})\n`);
-    mensaje += `\nTotal: $${total.toFixed(2)}\n`;
-    mensaje += `\nForma de pago: ${metodoPago}\n`;
-    mensaje += `Dirección de entrega: ${direccionCliente}\n`;
-    mensaje += `\nGracias por tu compra 🙌`;
-
-    const mensajeCodificado = encodeURIComponent(mensaje);
-
-    // Agregar automáticamente el código de país de Argentina
-    const numeroInternacional = "54" + telefonoCliente.replace(/\D/g, "");
-
-    const esMovil = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const url = esMovil
-        ? `https://api.whatsapp.com/send?phone=${numeroInternacional}&text=${mensajeCodificado}`
-        : `https://web.whatsapp.com/send?phone=${numeroInternacional}&text=${mensajeCodificado}`;
-
-    window.open(url, '_blank');
+    enviarPedidoWhatsApp(numeroDestino, datosCliente);
 }
 
-function vaciarPedido() {
-    localStorage.removeItem('pedido');
-    mostrarPedido();
-}
+    // Guardar en servidor antes (shadow write) – no bloquea WhatsApp
+    async function uiGuardarServidor() {
+        const btn = document.getElementById('btn-guardar-servidor');
+        btn.disabled = true; btn.textContent = 'Guardando...';
+        const datosCliente = {
+            nombre: document.getElementById('nombre').value.trim(),
+            telefono: document.getElementById('telefono').value.trim(),
+            direccion: document.getElementById('direccion').value.trim(),
+            metodoPago: document.getElementById('metodo-pago').value.trim()
+        };
+        const res = await enviarPedidoServidor(datosCliente);
+        if (res.error) {
+            alert('No se pudo guardar: ' + res.error);
+        } else {
+            alert('Pedido guardado (#' + res.pedido_id + ').');
+        }
+        btn.disabled = false; btn.textContent = 'Guardar en servidor';
+    }
 
-document.addEventListener('DOMContentLoaded', mostrarPedido);
+document.addEventListener('DOMContentLoaded', renderPedido);
 </script>
 {% endblock %}

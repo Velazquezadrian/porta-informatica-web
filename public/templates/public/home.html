@@ -6,7 +6,7 @@
 <!-- Carrusel -->
 {% load static %}
 
-<div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+<div id="heroCarousel" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="4000">
   
   <!-- Indicadores -->
   <div class="carousel-indicators">
@@ -19,10 +19,10 @@
 
     <!-- Slide 1 -->
     <div class="carousel-item active position-relative">
-      <img src="{% static 'img/carrusel/slide01.jpg' %}" class="d-block w-100" alt="Slide 01">
+  <img src="{% static 'img/carrusel/slide01.jpg' %}" class="d-block w-100 hero-img" alt="Soluciones tecnológicas">
       <div class="overlay"></div>
       <div class="carousel-caption caption-right">
-        <h1 class="fw-bold text-white display-3">
+  <h1 class="fw-bold text-white hero-heading">
           Tenemos <b>una solución</b> <br>para cada <b>oportunidad</b>
         </h1>
       </div>
@@ -30,21 +30,21 @@
 
     <!-- Slide 2 -->
     <div class="carousel-item position-relative">
-      <img src="{% static 'img/carrusel/slide02.jpg' %}" class="d-block w-100" alt="Slide 02">
+  <img src="{% static 'img/carrusel/slide02.jpg' %}" class="d-block w-100 hero-img" alt="Mejor servicio" loading="lazy">
       <div class="overlay"></div>
       <div class="carousel-caption caption-right">
-        <h1 class="fw-bold text-white display-3">
-          Nos <b>focalizamos</b> en <br> brindar <b>un mejor <br> servicio</b> cada día
+  <h1 class="fw-bold text-white hero-heading">
+          Nos <b>focalizamos</b> en <br> brindar <b>un mejor servicio</b> cada día
         </h1>
       </div>
     </div>
 
     <!-- Slide 3 -->
     <div class="carousel-item position-relative">
-      <img src="{% static 'img/carrusel/slide03.jpg' %}" class="d-block w-100" alt="Slide 03">
+  <img src="{% static 'img/carrusel/slide03.jpg' %}" class="d-block w-100 hero-img" alt="Atención personalizada" loading="lazy">
       <div class="overlay"></div>
       <div class="carousel-caption caption-right">
-        <h1 class="fw-bold text-white display-3">
+  <h1 class="fw-bold text-white hero-heading">
           Asesoramiento y atención <br> <b>personalizada</b>
         </h1>
       </div>
@@ -63,33 +63,143 @@
   </button>
 </div>
 
+<!-- 🟧 Buscador y filtro por categoría -->
+<div class="container my-4">
+<form method="get" class="mb-0 p-3 shadow-sm bg-white rounded-3 border filtros-box">
+  <div class="row g-3 align-items-end">
+    
+    <!-- 🟧 Campo de búsqueda -->
+    <div class="col-md-6">
+      <label for="q" class="form-label">Buscar producto</label>
+      <input type="text" name="q" id="q" value="{{ query }}" class="form-control" placeholder="Ej: mouse inalámbrico">
+    </div>
+
+    <!-- 🟧 Selector de categoría -->
+    <div class="col-md-4">
+      <label for="categoria" class="form-label">Categoría</label>
+      <select name="categoria" id="categoria" class="form-select">
+        <option value="">Todas</option>
+        {% for cat in categorias %}
+          <option value="{{ cat.categoria }}" {% if cat.categoria == categoria_seleccionada %}selected{% endif %}>
+            {{ cat.categoria }} ({{ cat.total }})
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <!-- 🟧 Filtro por precio -->
+    <div class="col-md-2">
+      <label for="precio_min" class="form-label">Precio mínimo</label>
+      <input type="number" name="precio_min" id="precio_min" value="{{ precio_min }}" class="form-control" min="0">
+    </div>
+
+    <div class="col-md-2">
+      <label for="precio_max" class="form-label">Precio máximo</label>
+      <input type="number" name="precio_max" id="precio_max" value="{{ precio_max }}" class="form-control" min="0">
+    </div>
+
+
+    <!-- 🟧 Botón de filtro -->
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-porta w-100">Filtrar</button>
+    </div>
+
+  </div>
+</form>
+</div>
 
 <!-- Catálogo -->
 <section class="py-5">
   <div class="container">
     <h2 class="text-center mb-4 text-warning">Catálogo de Productos</h2>
     <div class="row g-4">
-      {% for producto in productos %}
-        <div class="col-md-3 col-sm-6">
-          <div class="card h-100 text-center">
-            <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain;" alt="{{ producto.nombre }}">
-            <div class="card-body">
-              <h5 class="card-title">{{ producto.nombre }}</h5>
-              <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
-              <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control mb-2">
-              <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control mb-2">
-
-              <button class="btn btn-warning w-100"
-                      onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
-                Agregar al pedido
-              </button>
-
+      {% if productos %}
+        {% for producto in productos %}
+          <div class="col-lg-3 col-md-4 col-sm-6 col-6">
+            <div class="card h-100 text-center">
+              <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain;" alt="{{ producto.nombre }}" loading="lazy">
+              <div class="card-body">
+                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
+                <div class="mb-2">
+                  <label for="cantidad_{{ producto.id }}" class="form-label">Cantidad</label>
+                  <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control cantidad-input">
+                </div>
+                <button class="btn btn-porta w-100 agregar-pedido-btn"
+                        data-nombre="{{ producto.nombre|escapejs }}"
+                        data-precio="{{ producto.precio }}"
+                        data-id="{{ producto.id }}">
+                  Agregar al pedido
+                </button>
+              </div>
             </div>
           </div>
+        {% endfor %}
+      {% else %}
+        <!-- 🟧 Mensaje si no hay productos -->
+        <div class="col-12 text-center py-5">
+          <h4 class="text-muted">No se encontraron productos con los filtros aplicados.</h4>
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary mt-3">Limpiar filtros</a>
         </div>
-      {% endfor %}
+      {% endif %}
     </div>
+    {% if page_obj %}
+    <!-- Paginación -->
+    <nav aria-label="Paginación catálogo" class="mt-5">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1{% if filtros_qs %}&{{ filtros_qs }}{% endif %}" aria-label="Primera">«</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if filtros_qs %}&{{ filtros_qs }}{% endif %}" aria-label="Anterior">‹</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">«</span></li>
+          <li class="page-item disabled"><span class="page-link">‹</span></li>
+        {% endif %}
+
+        {# Ventana de páginas alrededor de la actual #}
+        {% for num in page_obj.paginator.page_range %}
+          {% if num >= page_obj.number|add:-2 and num <= page_obj.number|add:2 %}
+            {% if num == page_obj.number %}
+              <li class="page-item active" aria-current="page"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ num }}{% if filtros_qs %}&{{ filtros_qs }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if filtros_qs %}&{{ filtros_qs }}{% endif %}" aria-label="Siguiente">›</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if filtros_qs %}&{{ filtros_qs }}{% endif %}" aria-label="Última">»</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">›</span></li>
+          <li class="page-item disabled"><span class="page-link">»</span></li>
+        {% endif %}
+      </ul>
+      <p class="text-center small text-muted">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }} ({{ page_obj.paginator.count }} productos)</p>
+    </nav>
+    {% endif %}
   </div>
 </section>
 
+{% endblock %}
+{% block extra_js %}
+<script>
+  // Delegado para botones de agregar (evita inline JS y problemas con formateo de decimales)
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.agregar-pedido-btn');
+    if(!btn) return;
+    const id = parseInt(btn.dataset.id, 10);
+    const precio = parseFloat(btn.dataset.precio);
+    const nombre = btn.dataset.nombre;
+    if(!isNaN(id) && !isNaN(precio)) {
+      agregarAlPedido(nombre, precio, id);
+    }
+  });
+</script>
 {% endblock %}

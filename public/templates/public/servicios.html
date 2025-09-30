@@ -1,0 +1,40 @@
+{% extends 'public/base.html' %}
+{% block content %}
+<section class="py-5 bg-light">
+	<div class="container">
+		<h1 class="mb-4 text-warning">Servicios</h1>
+		<p class="lead">Soluciones integrales para tu infraestructura tecnológica.</p>
+
+		<div class="row g-4 mt-3">
+			<div class="col-md-4">
+				<div class="card h-100 shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title">Venta de Hardware</h5>
+						<p class="card-text small">Equipos, periféricos y componentes seleccionados para asegurar rendimiento y durabilidad.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card h-100 shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title">Asesoramiento</h5>
+						<p class="card-text small">Te ayudamos a elegir la mejor opción según tu necesidad y presupuesto.</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="card h-100 shadow-sm">
+					<div class="card-body">
+						<h5 class="card-title">Soporte Técnico</h5>
+						<p class="card-text small">Mantenimiento preventivo y resolución de incidentes críticos.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="mt-5">
+			<a href="{% url 'contacto' %}" class="btn btn-porta">Solicitar asesoramiento</a>
+		</div>
+	</div>
+</section>
+{% endblock %}
