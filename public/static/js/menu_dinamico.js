@@ -21,7 +21,7 @@ const CATEGORIES = [
 const CATEGORY_BUCKETS = Object.fromEntries(CATEGORIES.map(c => [c.key, new Set()]));
 
 const SUBCATEGORY_RULES = [
-  { test: n => ["PC Armada", "CPU Armadas"].includes(n), target: "computadoras", normalize: n => n },
+  { test: n => n === "PC Armada", target: "computadoras", normalize: n => n },
   { test: n => n === "mouse", target: "perifericos", normalize: n => "Mouse" },
 ];
 
@@ -107,12 +107,12 @@ function enhanceAccessibility(root){
 
 // Semillas iniciales
 addSubcategory('PC Armada');
-addSubcategory('CPU Armadas');
 addSubcategory('mouse');
-// Ejemplos ignorados
-addSubcategory('cpu armada');
-addSubcategory('CPU armadas');
-addSubcategory('Mouse');
+// Ejemplos ignorados / inconsistentes
+addSubcategory('CPU Armadas'); // ignorado ahora
+addSubcategory('cpu armada');  // ignorado
+addSubcategory('CPU armadas'); // ignorado
+addSubcategory('Mouse');       // ignorado (regla exige mouse minúscula)
 
 renderMenu();
 
