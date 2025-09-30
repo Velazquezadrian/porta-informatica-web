@@ -1,15 +1,91 @@
-# Python
+#############################
+#       Python / Django     #
+#############################
 __pycache__/
 *.py[cod]
-*.sqlite3
+*$py.class
 
-# Entorno virtual
+# Bases de datos locales
+*.sqlite3
+*.db
+
+# Entornos virtuales
 env/
 venv/
+.venv/
+ENV/
 
-# Archivos de configuración local
+# Config local / credenciales
 *.env
+.env.*
 
-# Archivos de sistema
+# Migraciones compiladas cache
+migrations/**/__pycache__/
+
+#############################
+#        Herramientas       #
+#############################
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+*.log.*
+logs/
+
+# Cobertura / pruebas
+htmlcov/
+.coverage*
+.pytest_cache/
+.tox/
+
+# MyPy / análisis
+.mypy_cache/
+.pyre/
+.pytype/
+
+# Builds / empaquetado
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+__pypackages__/
+
+#############################
+#     Frontend opcional     #
+#############################
+node_modules/
+staticfiles/
+
+#############################
+#          Media            #
+#############################
+# Ignorar medios subidos, pero conservar estructura
+media/*
+!media/.gitkeep
+!media/productos/.gitkeep
+
+# Si deseas versionar imágenes de catálogo quita estas líneas
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+!public/static/img/**
+
+#############################
+#     Archivos del SO       #
+#############################
 .DS_Store
 Thumbs.db
+~$*
+
+# Residuos editores
+*.swp
+*.swo
+*.bak
+
+# Otros
+.python_packages/
