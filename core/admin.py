@@ -4,9 +4,9 @@ from .models import Producto, Pedido, PedidoItem  # Importamos modelos
 # Registramos el modelo para que aparezca en el admin
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'precio', 'stock', 'activo') # Campos a mostrar en la lista
-    search_fields = ('nombre', 'descripcion') # Campos para buscar
-    list_filter = ('activo',) # Filtros laterales por categoría
+    list_display = ('nombre', 'marca', 'categoria', 'precio', 'stock', 'activo') # Campos a mostrar en la lista
+    search_fields = ('nombre', 'descripcion', 'marca') # Campos para buscar
+    list_filter = ('categoria', 'marca', 'activo',) # Filtros laterales por categoría, marca y estado
 
 
 class PedidoItemInline(admin.TabularInline):

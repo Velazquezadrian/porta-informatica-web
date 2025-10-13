@@ -3,13 +3,31 @@ from django.contrib.auth.models import User
 
 # Modelo principal para cargar productos al catálogo
 class Producto(models.Model):  # Modelo para productos
+    # Opciones de categorías del menú (sincronizadas con menu_dinamico.js)
+    CATEGORIA_CHOICES = [
+        ('Computadoras', 'Computadoras'),
+        ('Notebook', 'Notebook'),
+        ('Impresoras', 'Impresoras'),
+        ('Almacenamiento', 'Almacenamiento'),
+        ('Conectividad', 'Conectividad'),
+        ('Componentes de PC', 'Componentes de PC'),
+        ('Periféricos', 'Periféricos'),
+        ('Insumos', 'Insumos'),
+        ('Gaming', 'Gaming'),
+    ]
+    
     nombre = models.CharField(max_length=100)  # Nombre del producto
+    marca = models.CharField(max_length=50, blank=True, null=True, help_text='Marca del producto (ej: Logitech, HP, Samsung)')  # Marca opcional
     descripcion = models.TextField()  # Descripción
     precio = models.DecimalField(max_digits=10, decimal_places=2)  # Precio
     stock = models.IntegerField()  # Stock disponible
     imagen = models.ImageField(upload_to='productos/')  # Imagen
     activo = models.BooleanField(default=True)  # Mostrar/ocultar en catálogo
-    categoria = models.CharField(max_length=100, blank=True, null=True)  # Categoría opcional
+    categoria = models.CharField(
+        max_length=100, 
+        choices=CATEGORIA_CHOICES,
+        help_text='Selecciona la categoría del menú donde aparecerá este producto'
+    )  # Categoría obligatoria con opciones del menú
 
     def __str__(self):
         return self.nombre  # Muestra nombre en admin

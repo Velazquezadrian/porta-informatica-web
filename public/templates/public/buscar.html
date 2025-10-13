@@ -1,0 +1,197 @@
+{% extends 'public/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+  <!-- Breadcrumb / Título -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Búsqueda</li>
+    </ol>
+  </nav>
+
+  <h2 class="mb-4">
+    {% if query %}
+      Resultados para "{{ query }}"
+    {% else %}
+      Resultados de búsqueda
+    {% endif %}
+    <small class="text-muted">({{ total_resultados }} producto{{ total_resultados|pluralize }})</small>
+  </h2>
+
+  <div class="row">
+    <!-- 🟦 SIDEBAR IZQUIERDA - FILTROS -->
+    <aside class="col-lg-3 col-md-4 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-porta text-white">
+          <h5 class="mb-0">🔍 Refinar búsqueda</h5>
+        </div>
+        <div class="card-body">
+          <form method="get" action="{% url 'buscar' %}" id="filtros-form">
+            <!-- Búsqueda por texto -->
+            <div class="mb-4">
+              <label for="q" class="form-label fw-bold text-uppercase small">Producto</label>
+              <input type="search" name="q" id="q" value="{{ query }}" class="form-control" placeholder="Buscar...">
+            </div>
+
+            <hr class="my-3">
+
+            <!-- Filtro por Marca -->
+            <div class="mb-4">
+              <label for="marca" class="form-label fw-bold text-uppercase small">Marca</label>
+              <select name="marca" id="marca" class="form-select">
+                <option value="">Todas</option>
+                {% for m in marcas %}
+                  <option value="{{ m }}" {% if marca_seleccionada == m %}selected{% endif %}>{{ m }}</option>
+                {% endfor %}
+              </select>
+              {% if marca_seleccionada %}
+                <a href="?q={{ query }}&precio_min={{ precio_min }}&precio_max={{ precio_max }}" class="btn btn-link btn-sm p-0 mt-1 text-decoration-none">✕ Limpiar</a>
+              {% endif %}
+            </div>
+
+            <hr class="my-3">
+
+            <!-- Filtro por Precio -->
+            <div class="mb-4">
+              <label class="form-label fw-bold text-uppercase small">Precio</label>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input type="number" name="precio_min" id="precio_min" value="{{ precio_min }}" class="form-control form-control-sm" placeholder="Mín $" min="0" step="1">
+                </div>
+                <div class="col-6">
+                  <input type="number" name="precio_max" id="precio_max" value="{{ precio_max }}" class="form-control form-control-sm" placeholder="Máx $" min="0" step="1">
+                </div>
+              </div>
+              {% if precio_min or precio_max %}
+                <a href="?q={{ query }}&marca={{ marca_seleccionada }}" class="btn btn-link btn-sm p-0 mt-1 text-decoration-none">✕ Limpiar</a>
+              {% endif %}
+            </div>
+
+            <hr class="my-3">
+
+            <!-- Botones -->
+            <button type="submit" class="btn btn-porta w-100 mb-2">Aplicar filtros</button>
+            <a href="{% url 'buscar' %}{% if query %}?q={{ query }}{% endif %}" class="btn btn-outline-secondary w-100 btn-sm">Limpiar todos</a>
+          </form>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 🟧 CONTENIDO PRINCIPAL - RESULTADOS -->
+    <main class="col-lg-9 col-md-8">
+      {% if productos %}
+        <div class="row g-4">
+          {% for producto in productos %}
+            <div class="col-lg-4 col-md-6 col-sm-6 col-6">
+              <div class="card h-100 text-center shadow-sm">
+                <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:180px; object-fit:contain;" alt="{{ producto.nombre }}" loading="lazy">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title">{{ producto.nombre }}</h5>
+                  {% if producto.marca %}
+                    <p class="text-muted small mb-2">{{ producto.marca }}</p>
+                  {% endif %}
+                  <p class="card-text fw-bold text-warning fs-5">${{ producto.precio }}</p>
+                  <div class="mb-2 mt-auto">
+                    <label for="cantidad_{{ producto.id }}" class="form-label small">Cantidad</label>
+                    <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control cantidad-input">
+                  </div>
+                  <button class="btn btn-porta w-100 agregar-pedido-btn"
+                          data-nombre="{{ producto.nombre|escapejs }}"
+                          data-precio="{{ producto.precio }}"
+                          data-id="{{ producto.id }}">
+                    Agregar al pedido
+                  </button>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Paginación -->
+        {% if page_obj.has_other_pages %}
+          <nav aria-label="Paginación de resultados" class="mt-5">
+            <ul class="pagination justify-content-center">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?{{ filtros_qs }}&page=1" aria-label="Primera">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?{{ filtros_qs }}&page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                  </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <li class="page-item"><a class="page-link" href="?{{ filtros_qs }}&page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+              {% endfor %}
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?{{ filtros_qs }}&page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?{{ filtros_qs }}&page={{ page_obj.paginator.num_pages }}" aria-label="Última">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        {% endif %}
+
+      {% else %}
+        <!-- Sin resultados -->
+        <div class="text-center py-5">
+          <div class="display-1 text-muted mb-3">🔍</div>
+          <h4 class="text-muted mb-3">No se encontraron productos</h4>
+          {% if query or marca_seleccionada or precio_min or precio_max %}
+            <p>Intenta ajustar los filtros o buscar con otros términos.</p>
+            <a href="{% url 'buscar' %}" class="btn btn-porta mt-3">Limpiar filtros</a>
+          {% else %}
+            <p>Realiza una búsqueda para ver resultados.</p>
+            <a href="{% url 'home' %}" class="btn btn-porta mt-3">Ver catálogo completo</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </main>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Event listener delegado para botones de agregar al carrito
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.agregar-pedido-btn');
+    if(!btn) return;
+    const id = parseInt(btn.dataset.id, 10);
+    const precio = parseFloat(btn.dataset.precio);
+    const nombre = btn.dataset.nombre;
+    if(!isNaN(id) && !isNaN(precio)) {
+      agregarAlPedido(nombre, precio, id);
+      // Feedback visual (opcional)
+      btn.textContent = '✓ Agregado';
+      btn.classList.add('btn-success');
+      btn.classList.remove('btn-porta');
+      setTimeout(() => {
+        btn.textContent = 'Agregar al pedido';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-porta');
+      }, 1500);
+    }
+  });
+</script>
+{% endblock %}

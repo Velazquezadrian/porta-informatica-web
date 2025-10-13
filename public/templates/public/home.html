@@ -63,50 +63,6 @@
   </button>
 </div>
 
-<!-- 🟧 Buscador y filtro por categoría -->
-<div class="container my-4">
-<form method="get" class="mb-0 p-3 shadow-sm bg-white rounded-3 border filtros-box">
-  <div class="row g-3 align-items-end">
-    
-    <!-- 🟧 Campo de búsqueda -->
-    <div class="col-md-6">
-      <label for="q" class="form-label">Buscar producto</label>
-      <input type="text" name="q" id="q" value="{{ query }}" class="form-control" placeholder="Ej: mouse inalámbrico">
-    </div>
-
-    <!-- 🟧 Selector de categoría -->
-    <div class="col-md-4">
-      <label for="categoria" class="form-label">Categoría</label>
-      <select name="categoria" id="categoria" class="form-select">
-        <option value="">Todas</option>
-        {% for cat in categorias %}
-          <option value="{{ cat.categoria }}" {% if cat.categoria == categoria_seleccionada %}selected{% endif %}>
-            {{ cat.categoria }} ({{ cat.total }})
-          </option>
-        {% endfor %}
-      </select>
-    </div>
-    <!-- 🟧 Filtro por precio -->
-    <div class="col-md-2">
-      <label for="precio_min" class="form-label">Precio mínimo</label>
-      <input type="number" name="precio_min" id="precio_min" value="{{ precio_min }}" class="form-control" min="0">
-    </div>
-
-    <div class="col-md-2">
-      <label for="precio_max" class="form-label">Precio máximo</label>
-      <input type="number" name="precio_max" id="precio_max" value="{{ precio_max }}" class="form-control" min="0">
-    </div>
-
-
-    <!-- 🟧 Botón de filtro -->
-    <div class="col-md-2">
-      <button type="submit" class="btn btn-porta w-100">Filtrar</button>
-    </div>
-
-  </div>
-</form>
-</div>
-
 <!-- Catálogo -->
 <section class="py-5">
   <div class="container">
@@ -199,6 +155,15 @@
     const nombre = btn.dataset.nombre;
     if(!isNaN(id) && !isNaN(precio)) {
       agregarAlPedido(nombre, precio, id);
+      // Feedback visual
+      btn.textContent = '✓ Agregado';
+      btn.classList.add('btn-success');
+      btn.classList.remove('btn-porta');
+      setTimeout(() => {
+        btn.textContent = 'Agregar al pedido';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-porta');
+      }, 1500);
     }
   });
 </script>

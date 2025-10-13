@@ -9,10 +9,9 @@ const CATEGORIES = [
   { name: "Computadoras", key: "computadoras" },
   { name: "Notebook", key: "notebook" },
   { name: "Impresoras", key: "impresoras" },
-  { name: "Electrónica", key: "electronica" },
   { name: "Almacenamiento", key: "almacenamiento" },
   { name: "Conectividad", key: "conectividad" },
-  { name: "Componentes de CPU", key: "componentes-cpu" },
+  { name: "Componentes de PC", key: "componentes-cpu" },
   { name: "Periféricos", key: "perifericos" },
   { name: "Insumos", key: "insumos" },
   { name: "Gaming", key: "gaming" }
@@ -55,20 +54,21 @@ function renderMenu(){
   ul.innerHTML = '';
   CATEGORIES.forEach(cat => {
     const subs = Array.from(CATEGORY_BUCKETS[cat.key]);
-    if(subs.length === 0){
-      const li = document.createElement('li');
-      li.className = 'nav-item';
-      li.innerHTML = `<a class="nav-link" href="/c/${cat.key}">${cat.name}</a>`;
-      ul.appendChild(li);
-      return;
-    }
     const ddId = `dd-${cat.key}`;
     const li = document.createElement('li');
     li.className = 'nav-item dropdown';
+    
+    // Construir items del dropdown
+    let dropdownItems = `<li><a class="dropdown-item fw-bold" href="/?categoria=${cat.name}">Ver todos</a></li>`;
+    if(subs.length > 0){
+      dropdownItems += '<li><hr class="dropdown-divider"></li>';
+      dropdownItems += subs.map(s => `<li><a class=\"dropdown-item\" href=\"/c/${cat.key}/${slugify(s)}\">${s}</a></li>`).join('');
+    }
+    
     li.innerHTML = `
-      <a class="nav-link dropdown-toggle" href="/c/${cat.key}" id="${ddId}" role="button" data-bs-toggle="dropdown" aria-expanded="false">${cat.name}</a>
+      <a class="nav-link dropdown-toggle" href="#" id="${ddId}" role="button" data-bs-toggle="dropdown" aria-expanded="false">${cat.name}</a>
       <ul class="dropdown-menu" aria-labelledby="${ddId}">
-        ${subs.map(s => `<li><a class=\"dropdown-item\" href=\"/c/${cat.key}/${slugify(s)}\">${s}</a></li>`).join('')}
+        ${dropdownItems}
       </ul>`;
     ul.appendChild(li);
   });
