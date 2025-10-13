@@ -38,6 +38,9 @@ def home(request):
     if precio_max:
         productos_qs = productos_qs.filter(precio__lte=precio_max)
 
+    # Ordenar productos antes de paginar (evita UnorderedObjectListWarning)
+    productos_qs = productos_qs.order_by('-id')  # Más recientes primero
+    
     # Paginación (12 productos por página – ajustar si se requiere)
     paginator = Paginator(productos_qs, 12)
     page_obj = paginator.get_page(page_number)  # get_page maneja out-of-range
