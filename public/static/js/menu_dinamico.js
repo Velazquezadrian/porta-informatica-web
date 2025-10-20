@@ -20,14 +20,66 @@ const CATEGORIES = [
 const CATEGORY_BUCKETS = Object.fromEntries(CATEGORIES.map(c => [c.key, new Set()]));
 
 const SUBCATEGORY_RULES = [
-  { test: n => n === "PC Armada", target: "computadoras", normalize: n => n },
-  { test: n => n === "mouse", target: "perifericos", normalize: n => "Mouse" },
+  // Computadoras
+  { test: n => /^pc\s*armada$/i.test(n), target: "computadoras", normalize: n => "PC Armada" },
+  
+  // Notebook
+  { test: n => /^lenovo$/i.test(n), target: "notebook", normalize: n => "Lenovo" },
+  { test: n => /^asus$/i.test(n), target: "notebook", normalize: n => "Asus" },
+  { test: n => /^hp$/i.test(n), target: "notebook", normalize: n => "HP" },
+  { test: n => /^dell$/i.test(n), target: "notebook", normalize: n => "Dell" },
+  
+  // Impresoras
+  { test: n => /^laser$/i.test(n), target: "impresoras", normalize: n => "Laser" },
+  { test: n => /^multifunci[oó]n$/i.test(n), target: "impresoras", normalize: n => "Multifunción" },
+  { test: n => /^matricial$/i.test(n), target: "impresoras", normalize: n => "Matricial" },
+  
+  // Almacenamiento
+  { test: n => /^(s[oó]lido|ssd)$/i.test(n), target: "almacenamiento", normalize: n => "SSD" },
+  { test: n => /^(disco\s*duro|hdd)$/i.test(n), target: "almacenamiento", normalize: n => "Disco Duro" },
+  { test: n => /^pendrive$/i.test(n), target: "almacenamiento", normalize: n => "Pendrive" },
+  { test: n => /^(sd|tarjeta\s*sd)$/i.test(n), target: "almacenamiento", normalize: n => "Tarjeta SD" },
+  { test: n => /^(portables?|discos?\s*externos?)$/i.test(n), target: "almacenamiento", normalize: n => "Discos Externos" },
+  
+  // Conectividad
+  { test: n => /^router$/i.test(n), target: "conectividad", normalize: n => "Router" },
+  { test: n => /^switch$/i.test(n), target: "conectividad", normalize: n => "Switch" },
+  { test: n => /^extensores?\s*(wifi|de\s*rango)?$/i.test(n), target: "conectividad", normalize: n => "Extensores WiFi" },
+  { test: n => /^(usb\s*wifi|adaptador\s*usb)$/i.test(n), target: "conectividad", normalize: n => "USB WiFi" },
+  { test: n => /^(pci\s*wifi|placa\s*wifi)$/i.test(n), target: "conectividad", normalize: n => "PCI WiFi" },
+  
+  // Componentes de PC
+  { test: n => /^procesadores?$/i.test(n), target: "componentes-cpu", normalize: n => "Procesadores" },
+  { test: n => /^(motherboards?|mothers?)$/i.test(n), target: "componentes-cpu", normalize: n => "Motherboards" },
+  { test: n => /^(memorias?(\s*ram)?|ram)$/i.test(n), target: "componentes-cpu", normalize: n => "Memorias RAM" },
+  { test: n => /^(placas?\s*(de\s*)?video|gpu)$/i.test(n), target: "componentes-cpu", normalize: n => "Placas de Video" },
+  { test: n => /^gabinetes?$/i.test(n), target: "componentes-cpu", normalize: n => "Gabinetes" },
+  { test: n => /^fuentes?$/i.test(n), target: "componentes-cpu", normalize: n => "Fuentes" },
+  { test: n => /^coolers?$/i.test(n), target: "componentes-cpu", normalize: n => "Coolers" },
+  
+  // Periféricos
+  { test: n => /^mouse$/i.test(n), target: "perifericos", normalize: n => "Mouse" },
+  { test: n => /^teclados?$/i.test(n), target: "perifericos", normalize: n => "Teclados" },
+  { test: n => /^auriculares?$/i.test(n), target: "perifericos", normalize: n => "Auriculares" },
+  { test: n => /^(webcam|c[aá]maras?\s*web)$/i.test(n), target: "perifericos", normalize: n => "Webcam" },
+  { test: n => /^(parlantes?|altavoces?)$/i.test(n), target: "perifericos", normalize: n => "Parlantes" },
+  { test: n => /^micr[oó]fonos?$/i.test(n), target: "perifericos", normalize: n => "Micrófonos" },
+  
+  // Insumos
+  { test: n => /^cartuchos?$/i.test(n), target: "insumos", normalize: n => "Cartuchos" },
+  { test: n => /^t[oó]ners?$/i.test(n), target: "insumos", normalize: n => "Tóners" },
+  { test: n => /^(tintas?|botellas?\s*(de\s*)?tinta)$/i.test(n), target: "insumos", normalize: n => "Tintas" },
+  
+  // Gaming
+  { test: n => /^(mouse\s*gamer|gaming\s*mouse)$/i.test(n), target: "gaming", normalize: n => "Mouse Gamer" },
+  { test: n => /^(teclado\s*gamer|gaming\s*keyboard)$/i.test(n), target: "gaming", normalize: n => "Teclados Gamer" },
+  { test: n => /^(auriculares?\s*gamer|gaming\s*headset)$/i.test(n), target: "gaming", normalize: n => "Auriculares Gamer" },
 ];
 
 function addSubcategory(rawName){
   if(typeof rawName !== 'string') return false;
   const trimmed = rawName.trim();
-  if(trimmed.length < 3) return false;
+  if(trimmed.length < 2) return false;
   for(const rule of SUBCATEGORY_RULES){
     if(rule.test(trimmed)){
       const bucket = CATEGORY_BUCKETS[rule.target];
@@ -105,14 +157,61 @@ function enhanceAccessibility(root){
   });
 }
 
-// Semillas iniciales
+// Inicialización de subcategorías del menú
+// Computadoras
 addSubcategory('PC Armada');
-addSubcategory('mouse');
-// Ejemplos ignorados / inconsistentes
-addSubcategory('CPU Armadas'); // ignorado ahora
-addSubcategory('cpu armada');  // ignorado
-addSubcategory('CPU armadas'); // ignorado
-addSubcategory('Mouse');       // ignorado (regla exige mouse minúscula)
+
+// Notebook
+addSubcategory('Lenovo');
+addSubcategory('Asus');
+addSubcategory('HP');
+addSubcategory('Dell');
+
+// Impresoras
+addSubcategory('Laser');
+addSubcategory('Multifunción');
+addSubcategory('Matricial');
+
+// Almacenamiento
+addSubcategory('SSD');
+addSubcategory('Disco Duro');
+addSubcategory('Pendrive');
+addSubcategory('Tarjeta SD');
+addSubcategory('Discos Externos');
+
+// Conectividad
+addSubcategory('Router');
+addSubcategory('Switch');
+addSubcategory('Extensores WiFi');
+addSubcategory('USB WiFi');
+addSubcategory('PCI WiFi');
+
+// Componentes de PC
+addSubcategory('Procesadores');
+addSubcategory('Motherboards');
+addSubcategory('Memorias RAM');
+addSubcategory('Placas de Video');
+addSubcategory('Gabinetes');
+addSubcategory('Fuentes');
+addSubcategory('Coolers');
+
+// Periféricos
+addSubcategory('Mouse');
+addSubcategory('Teclados');
+addSubcategory('Auriculares');
+addSubcategory('Webcam');
+addSubcategory('Parlantes');
+addSubcategory('Micrófonos');
+
+// Insumos
+addSubcategory('Cartuchos');
+addSubcategory('Tóners');
+addSubcategory('Tintas');
+
+// Gaming
+addSubcategory('Mouse Gamer');
+addSubcategory('Teclados Gamer');
+addSubcategory('Auriculares Gamer');
 
 renderMenu();
 

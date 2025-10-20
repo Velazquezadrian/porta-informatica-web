@@ -5,6 +5,62 @@ from django.contrib.auth.models import User
 class Producto(models.Model):  # Modelo para productos
     # Opciones de categorías del menú (sincronizadas con menu_dinamico.js)
     CATEGORIA_CHOICES = [
+        # Computadoras
+        ('PC Armada', 'PC Armada'),
+        
+        # Notebook
+        ('Lenovo', 'Lenovo'),
+        ('Asus', 'Asus'),
+        ('HP', 'HP'),
+        ('Dell', 'Dell'),
+        
+        # Impresoras
+        ('Laser', 'Laser'),
+        ('Multifunción', 'Multifunción'),
+        ('Matricial', 'Matricial'),
+        
+        # Almacenamiento
+        ('SSD', 'SSD'),
+        ('Disco Duro', 'Disco Duro'),
+        ('Pendrive', 'Pendrive'),
+        ('Tarjeta SD', 'Tarjeta SD'),
+        ('Discos Externos', 'Discos Externos'),
+        
+        # Conectividad
+        ('Router', 'Router'),
+        ('Switch', 'Switch'),
+        ('Extensores WiFi', 'Extensores WiFi'),
+        ('USB WiFi', 'USB WiFi'),
+        ('PCI WiFi', 'PCI WiFi'),
+        
+        # Componentes de PC
+        ('Procesadores', 'Procesadores'),
+        ('Motherboards', 'Motherboards'),
+        ('Memorias RAM', 'Memorias RAM'),
+        ('Placas de Video', 'Placas de Video'),
+        ('Gabinetes', 'Gabinetes'),
+        ('Fuentes', 'Fuentes'),
+        ('Coolers', 'Coolers'),
+        
+        # Periféricos
+        ('Mouse', 'Mouse'),
+        ('Teclados', 'Teclados'),
+        ('Auriculares', 'Auriculares'),
+        ('Webcam', 'Webcam'),
+        ('Parlantes', 'Parlantes'),
+        ('Micrófonos', 'Micrófonos'),
+        
+        # Insumos
+        ('Cartuchos', 'Cartuchos'),
+        ('Tóners', 'Tóners'),
+        ('Tintas', 'Tintas'),
+        
+        # Gaming
+        ('Mouse Gamer', 'Mouse Gamer'),
+        ('Teclados Gamer', 'Teclados Gamer'),
+        ('Auriculares Gamer', 'Auriculares Gamer'),
+        
+        # Categorías principales (para "Ver todos")
         ('Computadoras', 'Computadoras'),
         ('Notebook', 'Notebook'),
         ('Impresoras', 'Impresoras'),

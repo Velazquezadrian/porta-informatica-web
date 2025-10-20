@@ -109,6 +109,23 @@ def contacto(request):
     return render(request, 'public/contacto.html')
 
 
+def categoria_detalle(request, categoria, subcategoria):
+    """Muestra productos de una subcategoría específica"""
+    productos_qs = Producto.objects.filter(activo=True, categoria__iexact=subcategoria.replace('-', ' '))
+    
+    page_number = request.GET.get('page', 1)
+    paginator = Paginator(productos_qs, 12)
+    page_obj = paginator.get_page(page_number)
+    
+    return render(request, 'public/categoria.html', {
+        'productos': page_obj.object_list,
+        'page_obj': page_obj,
+        'categoria': categoria,
+        'subcategoria': subcategoria.replace('-', ' ').title(),
+        'total_productos': paginator.count,
+    })
+
+
 @require_POST
 @login_required(login_url='/login/')
 def confirmar_pedido(request):
