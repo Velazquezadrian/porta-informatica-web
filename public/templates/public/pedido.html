@@ -1,8 +1,9 @@
 {% extends 'public/base.html' %}
 
 {% block content %}
-<section class="container py-4">
-    <h2 class="mb-4 text-warning">Resumen del pedido</h2>
+<section class="pedido-section py-5">
+    <div class="container">
+        <h1 class="catalogo-title mb-4">📋 Resumen del pedido</h1>
 
     <!-- Lista dinámica del pedido -->
     <ul id="lista-pedido" class="list-group mb-4"></ul>
@@ -50,8 +51,11 @@
         </div>
     </div>
     {% else %}
-        <p>Debes <a href="{% url 'login' %}">iniciar sesión</a> para hacer un pedido.</p>
+        <div class="alert alert-info">
+            <p class="mb-0">Debes <a href="{% url 'login' %}" class="alert-link">iniciar sesión</a> para hacer un pedido.</p>
+        </div>
     {% endif %}
+    </div>
 </section>
 
 <script>

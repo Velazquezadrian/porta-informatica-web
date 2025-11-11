@@ -1,36 +1,57 @@
 {% extends 'public/base.html' %}
 {% block content %}
-<section class="py-5">
+<section class="contacto-section py-5">
 	<div class="container">
-		<h1 class="mb-4 text-warning">Contacto</h1>
+		<h1 class="catalogo-title mb-4">📞 Contacto</h1>
 		<div class="row g-4">
 			<div class="col-lg-6">
-				<h5>Escribinos</h5>
-				<form class="row g-3" onsubmit="event.preventDefault(); alert('Formulario demo.');">
-					<div class="col-md-6">
-						<label class="form-label" for="nombre">Nombre</label>
-						<input class="form-control" id="nombre" required>
+				<div class="card shadow-sm h-100">
+					<div class="card-header bg-porta text-white">
+						<h5 class="mb-0">✉️ Escribinos</h5>
 					</div>
-						<div class="col-md-6">
-						<label class="form-label" for="email">Email</label>
-						<input type="email" class="form-control" id="email" required>
+					<div class="card-body">
+						<form class="row g-3" onsubmit="event.preventDefault(); alert('Formulario demo.');">
+							<div class="col-md-6">
+								<label class="form-label" for="nombre">Nombre</label>
+								<input class="form-control" id="nombre" required>
+							</div>
+							<div class="col-md-6">
+								<label class="form-label" for="email">Email</label>
+								<input type="email" class="form-control" id="email" required>
+							</div>
+							<div class="col-12">
+								<label class="form-label" for="mensaje">Mensaje</label>
+								<textarea id="mensaje" class="form-control" rows="5" required></textarea>
+							</div>
+							<div class="col-12">
+								<button type="submit" class="btn btn-porta w-100">Enviar mensaje</button>
+							</div>
+						</form>
 					</div>
-					<div class="col-12">
-						<label class="form-label" for="mensaje">Mensaje</label>
-						<textarea id="mensaje" class="form-control" rows="5" required></textarea>
-					</div>
-					<div class="col-12">
-						<button type="submit" class="btn btn-porta">Enviar</button>
-					</div>
-				</form>
+				</div>
 			</div>
 			<div class="col-lg-6">
-				<h5>Datos</h5>
-				<p class="small mb-1">Dirección: San Martín 1688 - Rosario</p>
-				<p class="small mb-1">Tel: <a class="link-contact" href="tel:+543415289824">(0341) 528 9824</a></p>
-				<p class="small mb-3">WhatsApp: <a class="link-contact" href="tel:+543416479902">341 647 9902</a></p>
-				<div class="ratio ratio-16x9 bg-light rounded d-flex align-items-center justify-content-center border">
-					<span class="text-muted small">Mapa / Embed (pendiente)</span>
+				<div class="card shadow-sm h-100">
+					<div class="card-header bg-porta text-white">
+						<h5 class="mb-0">📍 Información de contacto</h5>
+					</div>
+					<div class="card-body">
+						<div class="mb-3">
+							<h6 class="fw-bold">📍 Dirección</h6>
+							<p class="mb-0">San Martín 1688 - Rosario</p>
+						</div>
+						<div class="mb-3">
+							<h6 class="fw-bold">📞 Teléfono</h6>
+							<p class="mb-0"><a class="link-contact" href="tel:+543415289824">(0341) 528 9824</a></p>
+						</div>
+						<div class="mb-3">
+							<h6 class="fw-bold">💬 WhatsApp</h6>
+							<p class="mb-0"><a class="link-contact" href="tel:+543416479902">341 647 9902</a></p>
+						</div>
+						<div class="ratio ratio-16x9 bg-light rounded d-flex align-items-center justify-content-center border mt-4">
+							<span class="text-muted small">Mapa / Embed (pendiente)</span>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

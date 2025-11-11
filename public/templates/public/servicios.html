@@ -1,39 +1,50 @@
 {% extends 'public/base.html' %}
 {% block content %}
-<section class="py-5 bg-light">
+<section class="servicios-section py-5">
 	<div class="container">
-		<h1 class="mb-4 text-warning">Servicios</h1>
-		<p class="lead">Soluciones integrales para tu infraestructura tecnológica.</p>
+		<h1 class="catalogo-title mb-2">🛠️ Servicios</h1>
+		<p class="catalogo-subtitle mb-5">Soluciones integrales para tu infraestructura tecnológica</p>
 
-		<div class="row g-4 mt-3">
+		<div class="row g-4">
 			<div class="col-md-4">
-				<div class="card h-100 shadow-sm">
-					<div class="card-body">
-						<h5 class="card-title">Venta de Hardware</h5>
-						<p class="card-text small">Equipos, periféricos y componentes seleccionados para asegurar rendimiento y durabilidad.</p>
+				<div class="card h-100 shadow-sm border-0">
+					<div class="card-body text-center p-4">
+						<div class="mb-3">
+							<span class="display-4">🖥️</span>
+						</div>
+						<h5 class="card-title fw-bold mb-3">Venta de Hardware</h5>
+						<p class="card-text text-muted">Equipos, periféricos y componentes seleccionados para asegurar rendimiento y durabilidad.</p>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-4">
-				<div class="card h-100 shadow-sm">
-					<div class="card-body">
-						<h5 class="card-title">Asesoramiento</h5>
-						<p class="card-text small">Te ayudamos a elegir la mejor opción según tu necesidad y presupuesto.</p>
+				<div class="card h-100 shadow-sm border-0">
+					<div class="card-body text-center p-4">
+						<div class="mb-3">
+							<span class="display-4">💡</span>
+						</div>
+						<h5 class="card-title fw-bold mb-3">Asesoramiento</h5>
+						<p class="card-text text-muted">Te ayudamos a elegir la mejor opción según tu necesidad y presupuesto.</p>
 					</div>
 				</div>
 			</div>
 			<div class="col-md-4">
-				<div class="card h-100 shadow-sm">
-					<div class="card-body">
-						<h5 class="card-title">Soporte Técnico</h5>
-						<p class="card-text small">Mantenimiento preventivo y resolución de incidentes críticos.</p>
+				<div class="card h-100 shadow-sm border-0">
+					<div class="card-body text-center p-4">
+						<div class="mb-3">
+							<span class="display-4">🔧</span>
+						</div>
+						<h5 class="card-title fw-bold mb-3">Soporte Técnico</h5>
+						<p class="card-text text-muted">Mantenimiento preventivo y resolución de incidentes críticos.</p>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="mt-5">
-			<a href="{% url 'contacto' %}" class="btn btn-porta">Solicitar asesoramiento</a>
+		<div class="text-center mt-5">
+			<a href="{% url 'contacto' %}" class="btn btn-porta btn-lg px-5">
+				📞 Solicitar asesoramiento
+			</a>
 		</div>
 	</div>
 </section>

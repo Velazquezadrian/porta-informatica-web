@@ -64,6 +64,7 @@ const SUBCATEGORY_RULES = [
   { test: n => /^(webcam|c[aá]maras?\s*web)$/i.test(n), target: "perifericos", normalize: n => "Webcam" },
   { test: n => /^(parlantes?|altavoces?)$/i.test(n), target: "perifericos", normalize: n => "Parlantes" },
   { test: n => /^micr[oó]fonos?$/i.test(n), target: "perifericos", normalize: n => "Micrófonos" },
+  { test: n => /^(joystick|gamepad)s?$/i.test(n), target: "perifericos", normalize: n => "Joystick" },
   
   // Insumos
   { test: n => /^cartuchos?$/i.test(n), target: "insumos", normalize: n => "Cartuchos" },
@@ -202,6 +203,7 @@ addSubcategory('Auriculares');
 addSubcategory('Webcam');
 addSubcategory('Parlantes');
 addSubcategory('Micrófonos');
+addSubcategory('Joystick');
 
 // Insumos
 addSubcategory('Cartuchos');

@@ -1,5 +1,42 @@
 {% extends 'public/base.html' %}
 {% block content %}
-<h1>Mi perfil</h1>
-<p>Hola {{ user.username }}</p>
+<section class="perfil-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-porta text-white">
+                        <h3 class="mb-0">👤 Mi perfil</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="text-center mb-4">
+                            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                                <span class="display-3">👤</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <h5 class="text-muted mb-3">Información de la cuenta</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Usuario:</label>
+                                    <p class="form-control-plaintext">{{ user.username }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Email:</label>
+                                    <p class="form-control-plaintext">{{ user.email|default:"No configurado" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 justify-content-center mt-4">
+                            <a href="{% url 'editar_perfil' %}" class="btn btn-porta">✏️ Editar perfil</a>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Volver al inicio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

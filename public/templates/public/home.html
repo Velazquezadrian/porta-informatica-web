@@ -1,5 +1,6 @@
 {% extends 'public/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 
@@ -63,10 +64,66 @@
   </button>
 </div>
 
-<!-- Catálogo -->
-<section class="py-5">
+<!-- Productos Destacados -->
+<section class="productos-destacados">
   <div class="container">
-    <h2 class="text-center mb-4 text-warning">Catálogo de Productos</h2>
+    <div class="text-center mb-4">
+      <h2 class="section-title">🔥 Productos Destacados</h2>
+      <p class="section-subtitle">Los más vendidos y mejor calificados</p>
+    </div>
+    
+    <div id="productosDestacadosCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+      <div class="carousel-inner">
+        {% if productos_destacados %}
+          {% for chunk in productos_destacados|chunk:4 %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <div class="row g-4 justify-content-center">
+                {% for producto in chunk %}
+                  <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="producto-destacado-card">
+                      <div class="img-container">
+                        <span class="badge-destacado">⭐ Destacado</span>
+                        <a href="{% url 'producto_detalle' producto.id %}">
+                          <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">
+                        </a>
+                      </div>
+                      <div class="card-body">
+                        <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+                        <p class="producto-precio">${{ producto.precio }}</p>
+                        <a href="{% url 'producto_detalle' producto.id %}" class="btn-ver-producto">
+                          Ver Producto →
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      
+      {% if productos_destacados|length > 4 %}
+      <button class="carousel-control-prev" type="button" data-bs-target="#productosDestacadosCarousel" data-bs-slide="prev" style="left: -50px;">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#productosDestacadosCarousel" data-bs-slide="next" style="right: -50px;">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+      </button>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Catálogo -->
+<section class="catalogo-section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="catalogo-title">Catálogo Completo</h2>
+      <p class="catalogo-subtitle">Todos nuestros productos disponibles</p>
+    </div>
     <div class="row g-4">
       {% if productos %}
         {% for producto in productos %}
@@ -82,16 +139,18 @@
                   </a>
                 </h5>
                 <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
-                <div class="mb-2">
-                  <label for="cantidad_{{ producto.id }}" class="form-label">Cantidad</label>
-                  <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" class="form-control cantidad-input">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                  <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" 
+                         class="form-control cantidad-input" 
+                         style="width: 70px; height: 38px;">
+                  <button class="btn btn-porta flex-grow-1 agregar-pedido-btn"
+                          data-nombre="{{ producto.nombre|escapejs }}"
+                          data-precio="{{ producto.precio }}"
+                          data-id="{{ producto.id }}"
+                          style="font-size: 0.9rem; padding: 0.5rem;">
+                    <i class="bi bi-cart-plus"></i> Agregar
+                  </button>
                 </div>
-                <button class="btn btn-porta w-100 agregar-pedido-btn"
-                        data-nombre="{{ producto.nombre|escapejs }}"
-                        data-precio="{{ producto.precio }}"
-                        data-id="{{ producto.id }}">
-                  Agregar al pedido
-                </button>
               </div>
             </div>
           </div>
@@ -99,11 +158,18 @@
       {% else %}
         <!-- 🟧 Mensaje si no hay productos -->
         <div class="col-12 text-center py-5">
-          <h4 class="text-muted">No se encontraron productos con los filtros aplicados.</h4>
-          <a href="{% url 'home' %}" class="btn btn-outline-secondary mt-3">Limpiar filtros</a>
+          <div class="alert alert-light border-0 shadow-sm" style="max-width: 500px; margin: 0 auto;">
+            <i class="bi bi-search" style="font-size: 3rem; color: #ccc;"></i>
+            <h4 class="mt-3 text-muted">No se encontraron productos</h4>
+            <p class="text-muted">Intenta ajustar los filtros de búsqueda</p>
+            <a href="{% url 'home' %}" class="btn btn-porta mt-3">Ver todos los productos</a>
+          </div>
         </div>
       {% endif %}
     </div>
+    
+    <!-- Espacio adicional -->
+    <div class="mb-4"></div>
     {% if page_obj %}
     <!-- Paginación -->
     <nav aria-label="Paginación catálogo" class="mt-5">

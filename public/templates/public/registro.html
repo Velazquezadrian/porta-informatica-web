@@ -1,10 +1,51 @@
 {% extends 'public/base.html' %}
 {% block content %}
 
-<h1>Crear cuenta</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Registrarme</button>
-</form>
+<section class="registro-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-porta text-white text-center">
+                        <h3 class="mb-0">📝 Crear cuenta</h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <p class="text-center text-muted mb-4">
+                            Completá tus datos para registrarte en Porta Informática
+                        </p>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% for field in form %}
+                                <div class="mb-3">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% if field.help_text %}
+                                        <small class="form-text text-muted d-block">{{ field.help_text }}</small>
+                                    {% endif %}
+                                    {% if field.errors %}
+                                        <div class="text-danger small">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                            
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-porta btn-lg">✅ Registrarme</button>
+                            </div>
+                        </form>
+                        
+                        <hr class="my-4">
+                        
+                        <p class="text-center mb-0">
+                            ¿Ya tenés cuenta? <a href="{% url 'login' %}" class="text-porta fw-bold">Iniciá sesión</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

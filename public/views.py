@@ -42,6 +42,11 @@ def home(request):
         .annotate(total=Count('id'))
         .order_by('categoria')
     )
+    
+    # Productos destacados aleatorios (solo en primera página y sin filtros)
+    productos_destacados = []
+    if page_number == 1 and not any([categoria, q, precio_min, precio_max]):
+        productos_destacados = list(Producto.objects.filter(activo=True).order_by('?')[:8])
 
     # Preservar parámetros para paginación
     preserved_params = request.GET.copy()
@@ -58,6 +63,7 @@ def home(request):
         'precio_min': precio_min,
         'precio_max': precio_max,
         'filtros_qs': filtros_qs,
+        'productos_destacados': productos_destacados,
     })
 
 
@@ -108,7 +114,7 @@ def pedido(request):
     })
 
 def servicios(request):
-    return render(request, 'public/servicio.html')
+    return render(request, 'public/servicios.html')
 
 def contacto(request):
     return render(request, 'public/contacto.html')
