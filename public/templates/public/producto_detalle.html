@@ -2,14 +2,198 @@
 {% load static %}
 
 {% block content %}
-<section class="product-detalle">
-    <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="max-width: 300px;">
-    <h1>{{ producto.nombre }}</h1>
-    <p>{{ producto.descripcion }}</p>
-    <p><strong>{{ prodcuto.precio }}</strong></p>
-    <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}">
-    <button onclick="agregarAlPedido('{{ producto.nombre|escapejs }}', {{ producto.precio|floatformat:2 }}, {{ producto.id }})">
-        Agregar al carrito
-    </button>
-</section>
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Columna de imagen -->
+        <div class="col-md-6 mb-4">
+            <div class="product-image-container text-center bg-light p-4 rounded">
+                {% if producto.imagen %}
+                    <img src="{{ producto.imagen.url }}" 
+                         alt="{{ producto.nombre }}" 
+                         class="img-fluid rounded"
+                         style="max-height: 500px; object-fit: contain;">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center bg-secondary text-white rounded" style="height: 500px;">
+                        <span>Sin imagen</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Columna de información -->
+        <div class="col-md-6">
+            <h1 class="mb-3">{{ producto.nombre }}</h1>
+            
+            {% if producto.marca %}
+                <p class="text-muted mb-2">
+                    <strong>Marca:</strong> {{ producto.marca }}
+                    {% if producto.modelo %} | <strong>Modelo:</strong> {{ producto.modelo }}{% endif %}
+                </p>
+            {% endif %}
+            
+            <p class="text-muted mb-3">
+                <strong>Categoría:</strong> {{ producto.categoria }}
+            </p>
+
+            <hr>
+
+            <!-- Precio -->
+            <div class="mb-4">
+                <h2 class="text-primary mb-0">${{ producto.precio }}</h2>
+                {% if producto.stock > 0 %}
+                    <small class="text-success">✓ Stock disponible ({{ producto.stock }} unidades)</small>
+                {% else %}
+                    <small class="text-danger">✗ Sin stock</small>
+                {% endif %}
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-4">
+                <h5>Descripción:</h5>
+                <p class="text-justify">{{ producto.descripcion }}</p>
+            </div>
+
+            <!-- Características principales -->
+            {% if producto.caracteristicas %}
+            <div class="mb-4">
+                <h5>Características principales:</h5>
+                <div class="caracteristicas-list">
+                    {{ producto.caracteristicas|linebreaks }}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Especificaciones técnicas -->
+            {% if producto.especificaciones_tecnicas %}
+            <div class="mb-4">
+                <h5>Especificaciones técnicas:</h5>
+                <div class="bg-light p-3 rounded">
+                    <pre class="mb-0" style="white-space: pre-wrap; font-family: inherit; font-size: 0.95rem;">{{ producto.especificaciones_tecnicas }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Información adicional -->
+            <div class="row mb-4">
+                {% if producto.conectividad %}
+                <div class="col-md-6 mb-3">
+                    <div class="info-box p-3 border rounded">
+                        <h6 class="text-muted mb-2">🔌 Conectividad</h6>
+                        <p class="mb-0">{{ producto.conectividad }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.alimentacion %}
+                <div class="col-md-6 mb-3">
+                    <div class="info-box p-3 border rounded">
+                        <h6 class="text-muted mb-2">🔋 Alimentación</h6>
+                        <p class="mb-0">{{ producto.alimentacion }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.garantia %}
+                <div class="col-md-6 mb-3">
+                    <div class="info-box p-3 border rounded">
+                        <h6 class="text-muted mb-2">✓ Garantía</h6>
+                        <p class="mb-0">{{ producto.garantia }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.compatibilidad %}
+                <div class="col-md-6 mb-3">
+                    <div class="info-box p-3 border rounded">
+                        <h6 class="text-muted mb-2">💻 Compatibilidad</h6>
+                        <p class="mb-0" style="white-space: pre-wrap;">{{ producto.compatibilidad }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Agregar al carrito -->
+            {% if producto.stock > 0 %}
+                <div class="card border-primary mb-3">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <label for="cantidad" class="form-label mb-0">Cantidad:</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="cantidad" 
+                                       min="1" 
+                                       max="{{ producto.stock }}"
+                                       value="1" 
+                                       style="width: 80px;">
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-porta btn-lg w-100 agregar-detalle-btn"
+                                        data-nombre="{{ producto.nombre }}"
+                                        data-precio="{{ producto.precio }}"
+                                        data-id="{{ producto.id }}">
+                                    🛒 Agregar al carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    Este producto no está disponible en este momento.
+                </div>
+            {% endif %}
+
+            <!-- Botón volver -->
+            <div class="mt-3">
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                    ← Volver al catálogo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script para agregar al carrito desde detalle -->
+<script>
+document.addEventListener('click', function(e) {
+    const btn = e.target.closest('.agregar-detalle-btn');
+    if (!btn) return;
+    
+    const nombre = btn.dataset.nombre;
+    const precio = btn.dataset.precio;
+    const id = btn.dataset.id;
+    const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+    
+    if (window.agregarAlPedido) {
+        // Agregar la cantidad especificada
+        for(let i = 0; i < cantidad; i++) {
+            window.agregarAlPedido(nombre, precio, id);
+        }
+        
+        // Feedback visual
+        const originalText = btn.innerHTML;
+        const originalClass = btn.className;
+        btn.innerHTML = `✓ ${cantidad} producto${cantidad > 1 ? 's' : ''} agregado${cantidad > 1 ? 's' : ''}`;
+        btn.className = 'btn btn-success btn-lg w-100';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.className = originalClass;
+            btn.disabled = false;
+        }, 2000);
+    }
+});
+</script>
 {% endblock %}

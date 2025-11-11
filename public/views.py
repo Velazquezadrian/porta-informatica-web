@@ -90,12 +90,17 @@ def editar_perfil(request):
     return render(request, 'public/editar_perfil.html', {'form': form})
 
 
-@login_required(login_url='/login/')
+# @login_required(login_url='/login/')  # Desactivado temporalmente
 def pedido(request):
     """Página del carrito/pedido con datos del usuario"""
-    perfil = getattr(request.user, 'perfil', None)
-    telefono = perfil.telefono if perfil else ''
-    direccion = perfil.direccion if perfil else ''
+    # Obtener datos del perfil solo si el usuario está autenticado
+    if request.user.is_authenticated:
+        perfil = getattr(request.user, 'perfil', None)
+        telefono = perfil.telefono if perfil else ''
+        direccion = perfil.direccion if perfil else ''
+    else:
+        telefono = ''
+        direccion = ''
 
     return render(request, 'public/pedido.html', {
         'telefono': telefono,

@@ -2,11 +2,187 @@
 {% load static %}
 
 {% block content %}
-<h2>Cargar producto</h2>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-porta text-white">
+                    <h2 class="mb-0">📦 Cargar Nuevo Producto</h2>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Información básica -->
+                        <div class="section-divider mb-4">
+                            <h4 class="text-primary mb-3">📋 Información Básica</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.nombre.id_for_label }}" class="form-label fw-bold">Nombre del producto *</label>
+                                    {{ form.nombre }}
+                                    {% if form.nombre.errors %}
+                                        <div class="text-danger small">{{ form.nombre.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="{{ form.marca.id_for_label }}" class="form-label fw-bold">Marca</label>
+                                    {{ form.marca }}
+                                    {% if form.marca.errors %}
+                                        <div class="text-danger small">{{ form.marca.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="{{ form.modelo.id_for_label }}" class="form-label fw-bold">Modelo</label>
+                                    {{ form.modelo }}
+                                    {% if form.modelo.errors %}
+                                        <div class="text-danger small">{{ form.modelo.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label fw-bold">Descripción *</label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                    <div class="text-danger small">{{ form.descripcion.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.categoria.id_for_label }}" class="form-label fw-bold">Categoría *</label>
+                                    {{ form.categoria }}
+                                    {% if form.categoria.errors %}
+                                        <div class="text-danger small">{{ form.categoria.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.precio.id_for_label }}" class="form-label fw-bold">Precio *</label>
+                                    {{ form.precio }}
+                                    {% if form.precio.errors %}
+                                        <div class="text-danger small">{{ form.precio.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="{{ form.stock.id_for_label }}" class="form-label fw-bold">Stock *</label>
+                                    {{ form.stock }}
+                                    {% if form.stock.errors %}
+                                        <div class="text-danger small">{{ form.stock.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.imagen.id_for_label }}" class="form-label fw-bold">Imagen del producto *</label>
+                                {{ form.imagen }}
+                                {% if form.imagen.errors %}
+                                    <div class="text-danger small">{{ form.imagen.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
 
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Guardar</button>
-</form>
-{% endblok %}
+                        <!-- Características y especificaciones -->
+                        <div class="section-divider mb-4">
+                            <h4 class="text-primary mb-3">✨ Características y Especificaciones</h4>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.caracteristicas.id_for_label }}" class="form-label fw-bold">Características principales</label>
+                                <small class="text-muted d-block mb-1">Una característica por línea. Puede usar viñetas (-) o números.</small>
+                                {{ form.caracteristicas }}
+                                {% if form.caracteristicas.errors %}
+                                    <div class="text-danger small">{{ form.caracteristicas.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="{{ form.especificaciones_tecnicas.id_for_label }}" class="form-label fw-bold">Especificaciones técnicas</label>
+                                <small class="text-muted d-block mb-1">Detalles técnicos completos del producto</small>
+                                {{ form.especificaciones_tecnicas }}
+                                {% if form.especificaciones_tecnicas.errors %}
+                                    <div class="text-danger small">{{ form.especificaciones_tecnicas.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Información adicional -->
+                        <div class="section-divider mb-4">
+                            <h4 class="text-primary mb-3">📌 Información Adicional</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.conectividad.id_for_label }}" class="form-label fw-bold">🔌 Conectividad</label>
+                                    {{ form.conectividad }}
+                                    {% if form.conectividad.errors %}
+                                        <div class="text-danger small">{{ form.conectividad.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.alimentacion.id_for_label }}" class="form-label fw-bold">🔋 Alimentación</label>
+                                    {{ form.alimentacion }}
+                                    {% if form.alimentacion.errors %}
+                                        <div class="text-danger small">{{ form.alimentacion.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.garantia.id_for_label }}" class="form-label fw-bold">✓ Garantía</label>
+                                    {{ form.garantia }}
+                                    {% if form.garantia.errors %}
+                                        <div class="text-danger small">{{ form.garantia.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="{{ form.compatibilidad.id_for_label }}" class="form-label fw-bold">💻 Compatibilidad</label>
+                                    {{ form.compatibilidad }}
+                                    {% if form.compatibilidad.errors %}
+                                        <div class="text-danger small">{{ form.compatibilidad.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estado -->
+                        <div class="section-divider mb-4">
+                            <h4 class="text-primary mb-3">⚙️ Estado</h4>
+                            <div class="form-check">
+                                {{ form.activo }}
+                                <label class="form-check-label" for="{{ form.activo.id_for_label }}">
+                                    <strong>Producto activo</strong> (visible en el catálogo público)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a href="{% url 'lista_productos' %}" class="btn btn-outline-secondary">
+                                ← Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-porta btn-lg">
+                                💾 Guardar Producto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.section-divider {
+    border-left: 4px solid var(--color-primario);
+    padding-left: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 0.2rem rgba(245, 134, 52, 0.25);
+}
+
+textarea.form-control {
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+</style>
+{% endblock %}

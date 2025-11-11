@@ -74,7 +74,22 @@ class Producto(models.Model):  # Modelo para productos
     
     nombre = models.CharField(max_length=100)  # Nombre del producto
     marca = models.CharField(max_length=50, blank=True, null=True, help_text='Marca del producto (ej: Logitech, HP, Samsung)')  # Marca opcional
+    modelo = models.CharField(max_length=100, blank=True, null=True, help_text='Modelo o número de parte (ej: M170, ProBook 450)')
     descripcion = models.TextField()  # Descripción
+    
+    # Especificaciones técnicas detalladas
+    caracteristicas = models.TextField(blank=True, null=True, help_text='Características principales (una por línea)')
+    especificaciones_tecnicas = models.TextField(blank=True, null=True, help_text='Especificaciones técnicas detalladas (ej: procesador, RAM, etc.)')
+    
+    # Información de conectividad y energía
+    conectividad = models.CharField(max_length=100, blank=True, null=True, help_text='Tipo de conexión (ej: Wireless 2.4GHz, Bluetooth, USB)')
+    alimentacion = models.CharField(max_length=100, blank=True, null=True, help_text='Tipo de alimentación (ej: 1 pila AA, batería recargable, cable USB)')
+    
+    # Información de garantía y compatibilidad
+    garantia = models.CharField(max_length=100, blank=True, null=True, help_text='Tiempo de garantía (ej: 12 meses, 2 años)')
+    compatibilidad = models.TextField(blank=True, null=True, help_text='Sistemas operativos o dispositivos compatibles')
+    
+    # Campos básicos existentes
     precio = models.DecimalField(max_digits=10, decimal_places=2)  # Precio
     stock = models.IntegerField()  # Stock disponible
     imagen = models.ImageField(upload_to='productos/')  # Imagen

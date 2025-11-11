@@ -72,9 +72,15 @@
         {% for producto in productos %}
           <div class="col-lg-3 col-md-4 col-sm-6 col-6">
             <div class="card h-100 text-center">
-              <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain;" alt="{{ producto.nombre }}" loading="lazy">
+              <a href="{% url 'producto_detalle' producto.id %}" class="text-decoration-none">
+                <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain; cursor:pointer;" alt="{{ producto.nombre }}" loading="lazy">
+              </a>
               <div class="card-body">
-                <h5 class="card-title">{{ producto.nombre }}</h5>
+                <h5 class="card-title">
+                  <a href="{% url 'producto_detalle' producto.id %}" class="text-decoration-none text-dark">
+                    {{ producto.nombre }}
+                  </a>
+                </h5>
                 <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
                 <div class="mb-2">
                   <label for="cantidad_{{ producto.id }}" class="form-label">Cantidad</label>

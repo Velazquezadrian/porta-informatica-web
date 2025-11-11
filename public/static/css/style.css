@@ -251,3 +251,82 @@ form input[type="number"] {
 
 /* Clase de fondo corporativo para headers/cards */
 .bg-porta { background-color: var(--color-primario) !important; }
+
+/* ================= Estilos para tarjetas de producto ================= */
+.card {
+  transition: all 0.3s ease;
+  border: 1px solid #e0e0e0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+  border-color: var(--color-primario);
+}
+
+.card-img-top {
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Enlace de imagen sin subrayado */
+.card a.text-decoration-none:hover {
+  opacity: 1;
+}
+
+/* ================= Página de detalle de producto ================= */
+.product-image-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+.breadcrumb-item a {
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+  text-decoration: underline;
+}
+
+/* Lista de características */
+.caracteristicas-list p {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+.caracteristicas-list ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.caracteristicas-list li::before {
+  content: "✓ ";
+  color: var(--color-primario);
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+/* Cajas de información */
+.info-box {
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.info-box:hover {
+  border-color: var(--color-primario) !important;
+  box-shadow: 0 2px 8px rgba(245, 134, 52, 0.15);
+}
+
+.info-box h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
