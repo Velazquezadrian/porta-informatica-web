@@ -128,9 +128,9 @@
       {% if productos %}
         {% for producto in productos %}
           <div class="col-lg-3 col-md-4 col-sm-6 col-6">
-            <div class="card h-100 text-center">
+            <div class="card h-100 text-center producto-card" data-quick-view-enabled data-description="{{ producto.descripcion|default:'Producto de calidad'|truncatewords:15 }}">
               <a href="{% url 'producto_detalle' producto.id %}" class="text-decoration-none">
-                <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3" style="max-height:150px; object-fit:contain; cursor:pointer;" alt="{{ producto.nombre }}" loading="lazy">
+                <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid p-3 producto-img" style="max-height:150px; object-fit:contain; cursor:pointer;" alt="{{ producto.nombre }}" loading="lazy">
               </a>
               <div class="card-body">
                 <h5 class="card-title">
@@ -138,7 +138,12 @@
                     {{ producto.nombre }}
                   </a>
                 </h5>
-                <p class="card-text fw-bold text-warning">${{ producto.precio }}</p>
+                <p class="card-text fw-bold text-warning producto-precio">${{ producto.precio }}</p>
+                {% if producto.stock %}
+                <p class="small text-muted mb-2">
+                  <span data-tooltip="Unidades disponibles para compra inmediata">📦 Stock: {{ producto.stock }}</span>
+                </p>
+                {% endif %}
                 <div class="d-flex align-items-center gap-2 mb-3">
                   <input type="number" min="1" value="1" id="cantidad_{{ producto.id }}" 
                          class="form-control cantidad-input" 

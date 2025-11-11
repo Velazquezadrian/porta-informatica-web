@@ -4,11 +4,14 @@
 {% block content %}
 <section class="producto-detalle-section py-5">
 <div class="container py-5">
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
-            <li class="breadcrumb-item active" aria-current="page">{{ producto.nombre }}</li>
+    <!-- Breadcrumb Mejorado -->
+    <nav aria-label="breadcrumb" class="breadcrumb-custom">
+        <ol>
+            <li><a href="{% url 'home' %}">🏠 Inicio</a></li>
+            {% if producto.categoria %}
+            <li><a href="{% url 'home' %}?categoria={{ producto.categoria }}">{{ producto.categoria }}</a></li>
+            {% endif %}
+            <li class="active">{{ producto.nombre }}</li>
         </ol>
     </nav>
 

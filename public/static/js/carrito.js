@@ -17,6 +17,10 @@ window.agregarAlPedido = function(nombre, precio, id) {
     // Guardar y actualizar contador
     localStorage.setItem('pedido', JSON.stringify(pedido));
     window.actualizarContadorCarrito(pedido);
+    
+    // Efecto visual de confirmación
+    mostrarNotificacionAgregado(nombre, cantidad);
+    animarIconoCarrito();
 };
 
 // Función para actualizar el contador del carrito (suma cantidades, no ítems únicos)
@@ -26,6 +30,49 @@ window.actualizarContadorCarrito = function(pedido = null) {
     const el = document.getElementById('cart-count');
     if (el) el.textContent = total;
 };
+
+// ===================== ANIMACIONES Y EFECTOS VISUALES =====================
+// Anima el ícono del carrito con un bounce
+function animarIconoCarrito() {
+    const cartIcon = document.querySelector('#openCartBtn');
+    if (!cartIcon) return;
+    
+    cartIcon.style.animation = 'none';
+    setTimeout(() => {
+        cartIcon.style.animation = 'bounce 0.5s ease';
+    }, 10);
+    
+    setTimeout(() => {
+        cartIcon.style.animation = '';
+    }, 500);
+}
+
+// Muestra una notificación flotante cuando se agrega un producto
+function mostrarNotificacionAgregado(nombre, cantidad) {
+    // Crear elemento de notificación
+    const notif = document.createElement('div');
+    notif.className = 'toast-notification';
+    notif.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+        </svg>
+        <div>
+            <strong>¡Agregado al carrito!</strong>
+            <span>${cantidad}x ${nombre}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notif);
+    
+    // Animar entrada
+    setTimeout(() => notif.classList.add('show'), 10);
+    
+    // Remover después de 3 segundos
+    setTimeout(() => {
+        notif.classList.remove('show');
+        setTimeout(() => notif.remove(), 300);
+    }, 3000);
+}
 
 // Inicializar contador al cargar la página
 document.addEventListener('DOMContentLoaded', () => {
@@ -153,7 +200,7 @@ window.renderizarCartSidebar = function() {
                     <div class="cart-item-quantity">Cantidad: ${item.cantidad}</div>
                     <div class="cart-item-price">$${subtotal.toFixed(2)}</div>
                 </div>
-                <button class="cart-item-remove" onclick="eliminarDelCarrito('${item.id}')" title="Eliminar">
+                <button class="cart-item-remove" data-item-id="${item.id}" title="Eliminar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
@@ -170,7 +217,9 @@ window.renderizarCartSidebar = function() {
 // Elimina un producto del carrito
 window.eliminarDelCarrito = function(id) {
     let items = JSON.parse(localStorage.getItem('pedido') || '[]');
-    items = items.filter(item => item.id !== id);
+    // Convertir id a string para comparación consistente
+    const idStr = String(id);
+    items = items.filter(item => String(item.id) !== idStr);
     localStorage.setItem('pedido', JSON.stringify(items));
     window.actualizarContadorCarrito(items);
     window.renderizarCartSidebar();
@@ -231,6 +280,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (confirm('¿Estás seguro de vaciar el carrito?')) {
                 window.vaciarPedido();
                 window.renderizarCartSidebar();
+            }
+        });
+    }
+    
+    // Delegación de eventos para botones de eliminar (ya que se crean dinámicamente)
+    const cartContent = document.getElementById('cartSidebarContent');
+    if (cartContent) {
+        cartContent.addEventListener('click', (e) => {
+            const removeBtn = e.target.closest('.cart-item-remove');
+            if (removeBtn) {
+                const itemId = removeBtn.getAttribute('data-item-id');
+                if (itemId) {
+                    window.eliminarDelCarrito(itemId);
+                }
             }
         });
     }
